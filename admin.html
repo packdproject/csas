@@ -5,365 +5,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - HelpDesk Seller</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f0f2f5;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .header {
-            background: #3390ec;
-            color: white;
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .login-box {
-            background: white;
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .login-box input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-        }
-        .login-box button {
-            width: 100%;
-            padding: 12px;
-            background: #3390ec;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-        .tab-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .tab-btn {
-            padding: 12px 24px;
-            background: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .tab-btn.active {
-            background: #3390ec;
-            color: white;
-        }
-        .panel {
-            display: none;
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .panel.active {
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        .btn-primary {
-            background: #3390ec;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .btn-warning {
-            background: #ffc107;
-            color: #000;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #f8f9fa;
-        }
-        .jawaban-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .jawaban-badge {
-            background: #e9ecef;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal.active {
-            display: flex;
-        }
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .jawaban-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-        .jawaban-row input {
-            flex: 1;
-        }
-        .copy-link {
-            background: #28a745;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        @media (max-width: 768px) {
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-            th {
-                display: none;
-            }
-            td {
-                padding: 10px;
-                border-bottom: 1px solid #eee;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { background: #3390ec; color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .login-box { background: white; max-width: 400px; margin: 100px auto; padding: 30px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; }
+        .login-box button { width: 100%; padding: 12px; background: #3390ec; color: white; border: none; border-radius: 10px; cursor: pointer; }
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 12px 24px; background: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
+        .tab-btn.active { background: #3390ec; color: white; }
+        .panel { display: none; background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .panel.active { display: block; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+        .btn-primary { background: #3390ec; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
+        .btn-danger { background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-warning { background: #ffc107; color: #000; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-success { background: #28a745; color: white; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; }
+        .jawaban-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .jawaban-badge { background: #e9ecef; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 25px; border-radius: 16px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .jawaban-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .jawaban-row input { flex: 1; }
+        @media (max-width: 768px) { table, thead, tbody, th, td, tr { display: block; } th { display: none; } td { padding: 10px; border-bottom: 1px solid #eee; } }
     </style>
 </head>
 <body>
 <div class="container" id="app">
-    <div class="header">
-        <h1>📋 Admin Panel HelpDesk</h1>
-        <div>
-            <span id="adminStatus"></span>
-            <button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none; margin-left:10px;">Logout</button>
-        </div>
-    </div>
-    
-    <div id="loginPanel" class="login-box">
-        <h2>🔐 Login Admin</h2>
-        <input type="password" id="password" placeholder="Masukkan password">
-        <button onclick="login()">Login</button>
-    </div>
-    
+    <div class="header"><h1>📋 Admin Panel HelpDesk</h1><div><span id="adminStatus"></span><button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none; margin-left:10px;">Logout</button></div></div>
+    <div id="loginPanel" class="login-box"><h2>🔐 Login Admin</h2><input type="password" id="password" placeholder="Masukkan password"><button onclick="login()">Login</button></div>
     <div id="adminPanel" style="display:none;">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="showTab('menu')">📁 Menu Management</button>
-            <button class="tab-btn" onclick="showTab('faq')">❓ FAQ Management</button>
-        </div>
-        
-        <!-- Menu Panel -->
+        <div class="tab-buttons"><button class="tab-btn active" onclick="showTab('menu')">📁 Menu Management</button><button class="tab-btn" onclick="showTab('faq')">❓ FAQ Management</button></div>
         <div id="menuPanel" class="panel active">
             <h3>Tambah Menu Baru</h3>
-            <div class="form-group">
-                <label>Parent Menu</label>
-                <select id="menuParentId">
-                    <option value="0">Root (Menu Utama)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Nama Menu</label>
-                <input type="text" id="menuNama" placeholder="Contoh: 📦 Penjualan">
-            </div>
+            <div class="form-group"><label>Parent Menu</label><select id="menuParentId"><option value="0">Root (Menu Utama)</option></select></div>
+            <div class="form-group"><label>Nama Menu</label><input type="text" id="menuNama" placeholder="Contoh: 📦 Penjualan"></div>
             <button class="btn-primary" onclick="addMenu()">➕ Tambah Menu</button>
-            
             <h3 style="margin-top: 30px;">Daftar Menu</h3>
             <div id="menuList"></div>
         </div>
-        
-        <!-- FAQ Panel -->
         <div id="faqPanel" class="panel">
             <h3>Tambah FAQ Baru</h3>
-            <div class="form-group">
-                <label>Pilih Menu</label>
-                <select id="faqMenuId"></select>
-            </div>
-            <div class="form-group">
-                <label>Pertanyaan</label>
-                <input type="text" id="faqPertanyaan" placeholder="Masukkan pertanyaan">
-            </div>
-            <div class="form-group">
-                <label>Jawaban (maksimal 6 jawaban)</label>
+            <div class="form-group"><label>Pilih Menu</label><select id="faqMenuId"></select></div>
+            <div class="form-group"><label>Pertanyaan</label><input type="text" id="faqPertanyaan" placeholder="Masukkan pertanyaan"></div>
+            <div class="form-group"><label>Jawaban (maksimal 6 jawaban)</label>
                 <div id="jawabanContainer">
-                    <div class="jawaban-row">
-                        <input type="text" id="jawaban1" placeholder="Jawaban 1">
-                    </div>
-                    <div class="jawaban-row">
-                        <input type="text" id="jawaban2" placeholder="Jawaban 2 (opsional)">
-                    </div>
-                    <div class="jawaban-row">
-                        <input type="text" id="jawaban3" placeholder="Jawaban 3 (opsional)">
-                    </div>
-                    <div class="jawaban-row">
-                        <input type="text" id="jawaban4" placeholder="Jawaban 4 (opsional)">
-                    </div>
-                    <div class="jawaban-row">
-                        <input type="text" id="jawaban5" placeholder="Jawaban 5 (opsional)">
-                    </div>
-                    <div class="jawaban-row">
-                        <input type="text" id="jawaban6" placeholder="Jawaban 6 (opsional)">
-                    </div>
+                    <div class="jawaban-row"><input type="text" id="jawaban1" placeholder="Jawaban 1"></div>
+                    <div class="jawaban-row"><input type="text" id="jawaban2" placeholder="Jawaban 2 (opsional)"></div>
+                    <div class="jawaban-row"><input type="text" id="jawaban3" placeholder="Jawaban 3 (opsional)"></div>
+                    <div class="jawaban-row"><input type="text" id="jawaban4" placeholder="Jawaban 4 (opsional)"></div>
+                    <div class="jawaban-row"><input type="text" id="jawaban5" placeholder="Jawaban 5 (opsional)"></div>
+                    <div class="jawaban-row"><input type="text" id="jawaban6" placeholder="Jawaban 6 (opsional)"></div>
                 </div>
             </div>
             <button class="btn-primary" onclick="addFaq()">➕ Tambah FAQ</button>
-            
             <h3 style="margin-top: 30px;">Daftar FAQ</h3>
             <div id="faqList"></div>
         </div>
     </div>
 </div>
-
 <script>
-    // 🔴 GANTI DENGAN URL APPS SCRIPT ANDA 🔴
     const API_URL = "https://script.google.com/macros/s/AKfycbwl6tl5pNVLOQoWG_xYSHrV4YPIy2KneMarKApGIFiUY5ZMEb6GWK6tX_99aArvFPD1/exec";
-    let isLoggedIn = false;
-    let menus = [];
-    let faqs = [];
+    let isLoggedIn = false, menus = [], faqs = [];
 
-    function login() {
-        const password = document.getElementById("password").value;
-        if (password === "admin123") {
-            isLoggedIn = true;
+    function login() { const password = document.getElementById("password").value;
+        if (password === "admin123") { isLoggedIn = true;
             document.getElementById("loginPanel").style.display = "none";
             document.getElementById("adminPanel").style.display = "block";
             document.getElementById("logoutBtn").style.display = "inline-block";
             document.getElementById("adminStatus").innerHTML = "👤 Admin";
             loadData();
-        } else {
-            alert("Password salah!");
-        }
+        } else alert("Password salah!");
     }
-
-    function logout() {
-        isLoggedIn = false;
+    function logout() { isLoggedIn = false;
         document.getElementById("loginPanel").style.display = "block";
         document.getElementById("adminPanel").style.display = "none";
         document.getElementById("logoutBtn").style.display = "none";
         document.getElementById("adminStatus").innerHTML = "";
         document.getElementById("password").value = "";
     }
-
-    async function loadData() {
-        await loadMenus();
-        await loadFaqs();
-    }
-
-    async function loadMenus() {
-        const resp = await fetch(`${API_URL}?action=getAllMenus`);
-        const json = await resp.json();
-        if (json.success) {
-            menus = json.data;
-            renderMenuList();
-            renderMenuSelect();
-        }
-    }
-
-    async function loadFaqs() {
-        const resp = await fetch(`${API_URL}?action=getAllFaqs`);
-        const json = await resp.json();
-        if (json.success) {
-            faqs = json.data;
-            renderFaqList();
-        }
-    }
-
+    async function loadData() { await loadMenus(); await loadFaqs(); }
+    async function loadMenus() { const resp = await fetch(`${API_URL}?action=getAllMenus`); const json = await resp.json(); if (json.success) { menus = json.data; renderMenuList(); renderMenuSelect(); } }
+    async function loadFaqs() { const resp = await fetch(`${API_URL}?action=getAllFaqs`); const json = await resp.json(); if (json.success) { faqs = json.data; renderFaqList(); } }
+    
     function renderMenuList() {
         const buildTree = (parentId, level = 0) => {
             const children = menus.filter(m => m.parent_id === parentId);
             let html = '';
             for (const menu of children) {
-                html += `
-                    <tr>
-                        <td>${'—'.repeat(level)} ${menu.nama || '(tanpa nama)'}</td>
-                        <td>${menu.parent_id === '0' ? 'Root' : getMenuName(menu.parent_id)}</td>
-                        <td>
-                            <button class="btn-warning" onclick="editMenu('${menu.id}')">✏️ Edit</button>
-                            <button class="btn-danger" onclick="deleteMenu('${menu.id}')">🗑️ Hapus</button>
-                        </td>
-                    </tr>
-                `;
+                html += `<tr><td>${'—'.repeat(level)} ${menu.nama || '(tanpa nama)'}</td><td>${menu.parent_id === '0' ? 'Root' : getMenuName(menu.parent_id)}</td><td>
+                    <button class="btn-warning" onclick="editMenu('${menu.id}')">✏️ Edit</button>
+                    <button class="btn-danger" onclick="deleteMenu('${menu.id}')">🗑️ Hapus</button>
+                </td></tr>`;
                 html += buildTree(menu.id, level + 1);
             }
             return html;
         };
-        
-        document.getElementById("menuList").innerHTML = `
-            <table>
-                <thead><tr><th>Nama Menu</th><th>Parent</th><th>Aksi</th></tr></thead>
-                <tbody>${buildTree("0")}</tbody>
-            </table>
-        `;
+        document.getElementById("menuList").innerHTML = `<table><thead><tr><th>Nama Menu</th><th>Parent</th><th>Aksi</th></tr></thead><tbody>${buildTree("0")}</tbody></table>`;
     }
-
+    
     function renderMenuSelect() {
         const buildOptions = (parentId, level = 0) => {
             const children = menus.filter(m => m.parent_id === parentId);
@@ -374,186 +121,117 @@
             }
             return html;
         };
-        
         const options = `<option value="0">Root (Menu Utama)</option>${buildOptions("0")}`;
         document.getElementById("menuParentId").innerHTML = options;
         document.getElementById("faqMenuId").innerHTML = options;
     }
-
-    function getMenuName(id) {
-        const menu = menus.find(m => m.id === id);
-        return menu ? menu.nama : id;
-    }
-
+    
+    function getMenuName(id) { const menu = menus.find(m => m.id === id); return menu ? menu.nama : id; }
+    
     async function addMenu() {
         const parent_id = document.getElementById("menuParentId").value;
         const nama = document.getElementById("menuNama").value;
-        if (!nama) {
-            alert("Nama menu harus diisi!");
-            return;
-        }
-        
+        if (!nama) { alert("Nama menu harus diisi!"); return; }
         const formData = new FormData();
-        formData.append("action", "addMenu");
-        formData.append("password", "admin123");
-        formData.append("parent_id", parent_id);
-        formData.append("nama", nama);
-        
+        formData.append("action", "addMenu"); formData.append("password", "admin123");
+        formData.append("parent_id", parent_id); formData.append("nama", nama);
         const resp = await fetch(API_URL, { method: "POST", body: formData });
         const json = await resp.json();
-        if (json.success) {
-            alert("Menu berhasil ditambahkan!");
-            document.getElementById("menuNama").value = "";
-            loadMenus();
-        } else {
-            alert("Gagal: " + json.message);
-        }
+        if (json.success) { alert("Menu berhasil ditambahkan!"); document.getElementById("menuNama").value = ""; loadMenus(); }
+        else alert("Gagal: " + json.message);
     }
-
+    
     function editMenu(id) {
         const menu = menus.find(m => m.id === id);
         const newNama = prompt("Edit nama menu:", menu.nama);
-        if (newNama) {
-            updateMenu(id, newNama);
-        }
+        if (newNama && newNama !== menu.nama) updateMenu(id, newNama);
     }
-
+    
     async function updateMenu(id, nama) {
         const formData = new FormData();
-        formData.append("action", "updateMenu");
-        formData.append("password", "admin123");
-        formData.append("id", id);
-        formData.append("nama", nama);
-        
+        formData.append("action", "updateMenu"); formData.append("password", "admin123");
+        formData.append("id", id); formData.append("nama", nama);
         const resp = await fetch(API_URL, { method: "POST", body: formData });
         const json = await resp.json();
-        if (json.success) {
-            alert("Menu berhasil diupdate!");
-            loadMenus();
-        }
+        if (json.success) { alert("Menu berhasil diupdate!"); loadMenus(); }
     }
-
+    
     async function deleteMenu(id) {
-        if (confirm("Yakin hapus menu ini? Semua submenu juga akan terpengaruh.")) {
+        if (confirm("Yakin hapus menu ini?")) {
             const formData = new FormData();
-            formData.append("action", "deleteMenu");
-            formData.append("password", "admin123");
+            formData.append("action", "deleteMenu"); formData.append("password", "admin123");
             formData.append("id", id);
-            
             const resp = await fetch(API_URL, { method: "POST", body: formData });
             const json = await resp.json();
-            if (json.success) {
-                alert("Menu berhasil dihapus!");
-                loadMenus();
-            }
+            if (json.success) { alert("Menu berhasil dihapus!"); loadMenus(); }
         }
     }
-
+    
     async function addFaq() {
         const menu_id = document.getElementById("faqMenuId").value;
         const pertanyaan = document.getElementById("faqPertanyaan").value;
-        if (!pertanyaan) {
-            alert("Pertanyaan harus diisi!");
-            return;
-        }
-        
+        if (!pertanyaan) { alert("Pertanyaan harus diisi!"); return; }
         const formData = new FormData();
-        formData.append("action", "addFaq");
-        formData.append("password", "admin123");
-        formData.append("menu_id", menu_id);
-        formData.append("pertanyaan", pertanyaan);
-        for (let i = 1; i <= 6; i++) {
-            formData.append(`jawaban${i}`, document.getElementById(`jawaban${i}`).value);
-        }
-        
+        formData.append("action", "addFaq"); formData.append("password", "admin123");
+        formData.append("menu_id", menu_id); formData.append("pertanyaan", pertanyaan);
+        for (let i = 1; i <= 6; i++) formData.append(`jawaban${i}`, document.getElementById(`jawaban${i}`).value);
         const resp = await fetch(API_URL, { method: "POST", body: formData });
         const json = await resp.json();
         if (json.success) {
             alert("FAQ berhasil ditambahkan!");
             document.getElementById("faqPertanyaan").value = "";
-            for (let i = 1; i <= 6; i++) {
-                document.getElementById(`jawaban${i}`).value = "";
-            }
+            for (let i = 1; i <= 6; i++) document.getElementById(`jawaban${i}`).value = "";
             loadFaqs();
-        } else {
-            alert("Gagal: " + json.message);
-        }
+        } else alert("Gagal: " + json.message);
     }
-
+    
     function renderFaqList() {
         let html = '<table><thead><tr><th>Pertanyaan</th><th>Menu</th><th>Jawaban</th><th>Aksi</th></tr></thead><tbody>';
         for (const faq of faqs) {
             const jawabanHtml = faq.jawaban_list.map((j, i) => `<span class="jawaban-badge">${i+1}. ${j.substring(0, 30)}${j.length > 30 ? '...' : ''}</span>`).join('');
-            html += `
-                <tr>
-                    <td>${faq.pertanyaan}</td>
-                    <td>${getMenuName(faq.menu_id)}</td>
-                    <td><div class="jawaban-list">${jawabanHtml || '-'}</div></td>
-                    <td>
-                        <button class="btn-warning" onclick="editFaq('${faq.id}')">✏️ Edit</button>
-                        <button class="btn-danger" onclick="deleteFaq('${faq.id}')">🗑️ Hapus</button>
-                    </td>
-                </tr>
-            `;
+            html += `<tr><td>${faq.pertanyaan}</td><td>${getMenuName(faq.menu_id)}</td><td><div class="jawaban-list">${jawabanHtml || '-'}</div></td>
+                <td><button class="btn-warning" onclick="editFaq('${faq.id}')">✏️ Edit</button>
+                <button class="btn-danger" onclick="deleteFaq('${faq.id}')">🗑️ Hapus</button></td></tr>`;
         }
         html += '</tbody></table>';
         document.getElementById("faqList").innerHTML = html || '<p>Tidak ada data FAQ</p>';
     }
-
+    
     function editFaq(id) {
         const faq = faqs.find(f => f.id === id);
         const newPertanyaan = prompt("Edit pertanyaan:", faq.pertanyaan);
-        if (newPertanyaan) {
+        if (newPertanyaan && newPertanyaan !== faq.pertanyaan) {
             updateFaq(id, newPertanyaan, faq.jawaban_list);
         }
     }
-
+    
     async function updateFaq(id, pertanyaan, jawabanList) {
         const formData = new FormData();
-        formData.append("action", "updateFaq");
-        formData.append("password", "admin123");
-        formData.append("id", id);
-        formData.append("pertanyaan", pertanyaan);
-        for (let i = 0; i < jawabanList.length; i++) {
-            formData.append(`jawaban${i+1}`, jawabanList[i]);
-        }
-        
+        formData.append("action", "updateFaq"); formData.append("password", "admin123");
+        formData.append("id", id); formData.append("pertanyaan", pertanyaan);
+        for (let i = 0; i < jawabanList.length; i++) formData.append(`jawaban${i+1}`, jawabanList[i]);
         const resp = await fetch(API_URL, { method: "POST", body: formData });
         const json = await resp.json();
-        if (json.success) {
-            alert("FAQ berhasil diupdate!");
-            loadFaqs();
-        }
+        if (json.success) { alert("FAQ berhasil diupdate!"); loadFaqs(); }
     }
-
+    
     async function deleteFaq(id) {
         if (confirm("Yakin hapus FAQ ini?")) {
             const formData = new FormData();
-            formData.append("action", "deleteFaq");
-            formData.append("password", "admin123");
+            formData.append("action", "deleteFaq"); formData.append("password", "admin123");
             formData.append("id", id);
-            
             const resp = await fetch(API_URL, { method: "POST", body: formData });
             const json = await resp.json();
-            if (json.success) {
-                alert("FAQ berhasil dihapus!");
-                loadFaqs();
-            }
+            if (json.success) { alert("FAQ berhasil dihapus!"); loadFaqs(); }
         }
     }
-
+    
     function showTab(tab) {
         document.getElementById("menuPanel").classList.remove("active");
         document.getElementById("faqPanel").classList.remove("active");
         document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-        
-        if (tab === "menu") {
-            document.getElementById("menuPanel").classList.add("active");
-            document.querySelectorAll(".tab-btn")[0].classList.add("active");
-        } else {
-            document.getElementById("faqPanel").classList.add("active");
-            document.querySelectorAll(".tab-btn")[1].classList.add("active");
-        }
+        if (tab === "menu") { document.getElementById("menuPanel").classList.add("active"); document.querySelectorAll(".tab-btn")[0].classList.add("active"); }
+        else { document.getElementById("faqPanel").classList.add("active"); document.querySelectorAll(".tab-btn")[1].classList.add("active"); }
     }
 </script>
 </body>
