@@ -64,7 +64,7 @@
     <div class="header">
         <h1>📋 Admin Panel - Minipack</h1>
         <div style="display: flex; gap: 10px;">
-            <a href="#" onclick="openChangePassword()" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 8px; color: white; text-decoration: none;">🔐 Ganti Password</a>
+            <button class="btn-primary" onclick="openChangePassword()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);">🔐 Ganti Password</button>
             <button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none;">Logout</button>
         </div>
     </div>
@@ -76,7 +76,7 @@
         <h2>🔐 Login Admin</h2>
         <input type="password" id="password" placeholder="Masukkan password admin" onkeypress="if(event.key==='Enter') login()">
         <button onclick="login()">Login</button>
-        <div class="info-badge">💡 Hubungi developer untuk mengubah password</div>
+        <div class="info-badge">💡 Ganti password via tombol di pojok kanan atas setelah login</div>
     </div>
     
     <!-- Admin Panel -->
@@ -150,7 +150,7 @@
 </div>
 
 <script>
-    // GANTI DENGAN URL APPS SCRIPT ANDA
+    // URL APPS SCRIPT ANDA
     const API_URL = "https://script.google.com/macros/s/AKfycbz4WXspTPdWe1l2iXeu3irMyLT1-VQt5gcnS5gWWn4J9dpHPaikxHO0yQakb-GjrScI/exec";
     
     let menus = [], faqs = [];
@@ -197,7 +197,7 @@
     
     function openChangePassword() {
         // Buka halaman ganti password yang terpisah
-        window.open(`${API_URL}?action=changePasswordPage`, '_blank', 'width=500,height=600');
+        window.open(`${API_URL}?action=changePasswordPage`, '_blank', 'width=550,height=650,scrollbars=yes');
     }
     
     function getPassword() { return sessionStorage.getItem("adminPassword"); }
@@ -224,11 +224,11 @@
         const buildTree = (parentId, level = 0) => {
             let html = '';
             for (const menu of menus.filter(m => m.parent_id === parentId)) {
-                html += `<tr><td style="padding-left:${level*20}px">${'—'.repeat(level)} ${escapeHtml(menu.nama)}</td>
+                html += `<table><td style="padding-left:${level*20}px">${'—'.repeat(level)} ${escapeHtml(menu.nama)}</td>
                          <td>${menu.parent_id === '0' ? 'Root' : getMenuName(menu.parent_id)}</td>
                          <td><button class="btn-warning" onclick="openEditMenu('${menu.id}')">✏️</button>
                         <button class="btn-danger" onclick="deleteMenu('${menu.id}')">🗑️</button></td>
-                        </tr>`;
+                    个`;
                 html += buildTree(menu.id, level + 1);
             }
             return html;
@@ -368,7 +368,7 @@
                         <td><div class="jawaban-list">${jawabanHtml || '-'}</div></td>
                         <td><button class="btn-warning" onclick="openEditFaq('${faq.id}')">✏️</button>
                         <button class="btn-danger" onclick="deleteFaq('${faq.id}')">🗑️</button></td>
-                     </tr>`;
+                      </tr>`;
         }
         html += '</tbody></table>';
         document.getElementById("faqList").innerHTML = html || '<p>Tidak ada data</p>';
