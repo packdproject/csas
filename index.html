@@ -2,46 +2,143 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS Dashboard - FAQ Seller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CS Dashboard - FAQ Seller Center</title>
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- Font Awesome -->
+    
+    <!-- Font Awesome 6 (Icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Favicon (opsional) -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    
+    <style>
+        /* Fallback style jika CSS tidak load */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .loading-fallback {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="logo-area">
                 <img src="assets/logo.png" alt="Logo" class="logo" onerror="this.src='https://via.placeholder.com/40x40?text=CS'">
                 <h2>CS Dashboard</h2>
             </div>
             <nav class="menu-tree" id="menuTree">
-                <div class="loading">Memuat menu...</div>
+                <div class="loading">
+                    <i class="fas fa-spinner fa-pulse"></i> Memuat menu...
+                </div>
             </nav>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <main class="main-content">
             <header class="content-header">
-                <h1 id="pageTitle">FAQ Seller</h1>
+                <h1 id="pageTitle">FAQ Seller Center</h1>
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Cari pertanyaan atau jawaban...">
+                    <input type="text" id="searchInput" placeholder="Cari pertanyaan atau jawaban..." autocomplete="off">
                 </div>
             </header>
             <div class="faq-container" id="faqContainer">
-                <div class="empty-state">Pilih menu di sidebar untuk melihat FAQ</div>
+                <div class="empty-state">
+                    <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                    Pilih menu di sidebar untuk melihat FAQ
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- URUTAN LOADING PENTING! -->
+    <!-- Toast Notification Container (untuk notifikasi) -->
+    <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+
+    <!-- JavaScript Modules - Urutan LOADING PENTING! -->
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/faq.js"></script>
     <script src="js/sidebar.js"></script>
     <script src="js/search.js"></script>
     <script src="js/app.js"></script>
+    
+    <!-- Additional Helper Functions -->
+    <script>
+        // Toast notification helper
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                background: ${type === 'error' ? '#dc2626' : type === 'success' ? '#10b981' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                animation: slideIn 0.3s ease;
+                font-size: 14px;
+                cursor: pointer;
+            `;
+            toast.innerHTML = `
+                <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+                ${message}
+            `;
+            
+            toast.onclick = () => toast.remove();
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) toast.remove();
+            }, 3000);
+        }
+        
+        // Tambahkan animasi slideIn
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            if (e.message && e.message.includes('loadFaqByMenu')) {
+                console.warn('Function not ready yet, will retry');
+            }
+        });
+        
+        // Cek koneksi internet
+        window.addEventListener('online', () => {
+            showToast('Koneksi kembali online', 'success');
+            location.reload();
+        });
+        
+        window.addEventListener('offline', () => {
+            showToast('Koneksi terputus! Periksa internet Anda', 'error');
+        });
+        
+        console.log('✅ HTML and helpers loaded successfully');
+    </script>
 </body>
 </html>
