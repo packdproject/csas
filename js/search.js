@@ -6,41 +6,39 @@ const SearchHandler = {
 
     init() {
         this.inputElement = document.getElementById('searchInput');
-        if (!this.inputElement) return;
+        if (!this.inputElement) {
+            console.warn('⚠️ Search input not found');
+            return;
+        }
 
         this.inputElement.addEventListener('input', (e) => {
             const keyword = e.target.value.trim();
             this.currentKeyword = keyword;
 
-            // Debounce untuk performa
             clearTimeout(this.debounceTimer);
             if (keyword.length === 0) {
-                // Jika kosong, reload FAQ dari menu aktif
                 const activeId = Sidebar.currentActiveId;
                 if (activeId && typeof window.loadFaqByMenu === 'function') {
                     window.loadFaqByMenu(activeId);
-                } else if (activeId) {
-                    console.warn('loadFaqByMenu not ready');
-                } else {
-                    FaqManager.render([]);
                 }
                 return;
             }
             this.debounceTimer = setTimeout(() => {
                 this.performSearch(keyword);
-            }, 400);
+            }, 500);
         });
+        
+        if (CONFIG.DEBUG) console.log('✅ SearchHandler initialized');
     },
 
     async performSearch(keyword) {
-        if (!keyword.trim()) return;
+        if (!keyword || !keyword.trim()) return;
         
         FaqManager.showLoading();
         try {
             const results = await API.searchFaq(keyword);
-            // Update judul halaman
             const pageTitle = document.getElementById('pageTitle');
-            if (pageTitle) pageTitle.textContent = `Hasil pencarian: "${keyword}"`;
+            if (pageTitle) pageTitle.textContent = `🔍 Hasil: "${keyword}"`;
             FaqManager.renderSearchResults(results, keyword);
         } catch (err) {
             console.error('Search error:', err);
