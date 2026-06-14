@@ -39,24 +39,45 @@
 </head>
 <body>
 <div class="container" id="app">
-    <div class="header"><h1>📋 Admin Panel HelpDesk</h1><div><span id="adminStatus"></span><button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none; margin-left:10px;">Logout</button></div></div>
+    <div class="header">
+        <h1>📋 Admin Panel HelpDesk</h1>
+        <div>
+            <span id="adminStatus"></span>
+            <button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none; margin-left:10px;">Logout</button>
+        </div>
+    </div>
     
     <div id="alertMessage" class="alert"></div>
     
-    <div id="loginPanel" class="login-box"><h2>🔐 Login Admin</h2><input type="password" id="password" placeholder="Masukkan password" onkeypress="if(event.key==='Enter') login()"><button onclick="login()">Login</button></div>
+    <div id="loginPanel" class="login-box">
+        <h2>🔐 Login Admin</h2>
+        <input type="password" id="password" placeholder="Masukkan password" onkeypress="if(event.key==='Enter') login()">
+        <button onclick="login()">Login</button>
+        <div style="margin-top: 10px; font-size: 12px; color: #666; text-align: center;">
+            Password default: admin123
+        </div>
+    </div>
     
     <div id="adminPanel" style="display:none;">
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="showTab('menu')">📁 Menu Management</button>
             <button class="tab-btn" onclick="showTab('faq')">❓ FAQ Management</button>
-            <button class="tab-btn" onclick="showTab('security')">🔒 Security</button>
+            <button class="tab-btn" onclick="showTab('security')">🔒 Ganti Password</button>
         </div>
         
         <!-- MENU PANEL -->
         <div id="menuPanel" class="panel active">
             <h3>Tambah Menu Baru</h3>
-            <div class="form-group"><label>Parent Menu</label><select id="menuParentId"><option value="0">Root (Menu Utama)</option></select></div>
-            <div class="form-group"><label>Nama Menu</label><input type="text" id="menuNama" placeholder="Contoh: 📦 Penjualan"></div>
+            <div class="form-group">
+                <label>Parent Menu</label>
+                <select id="menuParentId">
+                    <option value="0">Root (Menu Utama)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nama Menu</label>
+                <input type="text" id="menuNama" placeholder="Contoh: 📦 Penjualan">
+            </div>
             <button class="btn-primary" onclick="addMenu()">➕ Tambah Menu</button>
             <h3 style="margin-top: 30px;">Daftar Menu</h3>
             <div id="menuList"></div>
@@ -65,8 +86,14 @@
         <!-- FAQ PANEL -->
         <div id="faqPanel" class="panel">
             <h3>Tambah FAQ Baru (Support 6 Jawaban)</h3>
-            <div class="form-group"><label>Pilih Menu</label><select id="faqMenuId"></select></div>
-            <div class="form-group"><label>Pertanyaan</label><input type="text" id="faqPertanyaan" placeholder="Masukkan pertanyaan"></div>
+            <div class="form-group">
+                <label>Pilih Menu</label>
+                <select id="faqMenuId"></select>
+            </div>
+            <div class="form-group">
+                <label>Pertanyaan</label>
+                <input type="text" id="faqPertanyaan" placeholder="Masukkan pertanyaan">
+            </div>
             
             <div class="form-group">
                 <label>Jawaban (6 kolom, isi sesuai kebutuhan)</label>
@@ -119,6 +146,7 @@
 </div>
 
 <script>
+    // Ganti dengan URL Apps Script Anda
     const API_URL = "https://script.google.com/macros/s/AKfycbwl6tl5pNVLOQoWG_xYSHrV4YPIy2KneMarKApGIFiUY5ZMEb6GWK6tX_99aArvFPD1/exec";
     let isLoggedIn = false, menus = [], faqs = [];
 
@@ -140,12 +168,13 @@
         }
         
         try {
+            showAlert("Memverifikasi password...", "success");
             const resp = await fetch(`${API_URL}?action=verifyPassword&password=${encodeURIComponent(password)}`);
             const json = await resp.json();
             
             if (json.success) { 
                 isLoggedIn = true;
-                sessionStorage.setItem("adminLoggedIn", "true");
+                sessionStorage.setItem("adminPassword", password);
                 document.getElementById("loginPanel").style.display = "none";
                 document.getElementById("adminPanel").style.display = "block";
                 document.getElementById("logoutBtn").style.display = "inline-block";
@@ -153,7 +182,7 @@
                 loadData();
                 showAlert("Login berhasil!", "success");
             } else {
-                showAlert("Password salah!", "error");
+                showAlert("Password salah! Gunakan password yang benar.", "error");
             }
         } catch (error) {
             showAlert("Error: " + error.message, "error");
@@ -162,13 +191,17 @@
     
     function logout() { 
         isLoggedIn = false;
-        sessionStorage.removeItem("adminLoggedIn");
+        sessionStorage.removeItem("adminPassword");
         document.getElementById("loginPanel").style.display = "block";
         document.getElementById("adminPanel").style.display = "none";
         document.getElementById("logoutBtn").style.display = "none";
         document.getElementById("adminStatus").innerHTML = "";
         document.getElementById("password").value = "";
         showAlert("Anda telah logout", "success");
+    }
+    
+    function getCurrentPassword() {
+        return sessionStorage.getItem("adminPassword") || document.getElementById("password").value;
     }
     
     async function changePassword() {
@@ -202,10 +235,18 @@
             const json = await resp.json();
             
             if (json.success) {
-                showAlert("Password berhasil diubah!", "success");
+                showAlert("Password berhasil diubah! Silakan login ulang.", "success");
+                sessionStorage.setItem("adminPassword", newPassword);
                 document.getElementById("currentPassword").value = "";
                 document.getElementById("newPassword").value = "";
                 document.getElementById("confirmPassword").value = "";
+                
+                // Optional: logout after 2 seconds
+                setTimeout(() => {
+                    if (confirm("Password telah diubah. Apakah ingin login ulang?")) {
+                        logout();
+                    }
+                }, 2000);
             } else {
                 showAlert("Gagal: " + json.message, "error");
             }
@@ -252,7 +293,7 @@
             let html = '';
             for (const menu of children) {
                 html += `<tr>
-                    <td>${'—'.repeat(level)} ${menu.nama || '(tanpa nama)'}</td>
+                    <td style="padding-left: ${level * 20}px">${'—'.repeat(level)} ${menu.nama || '(tanpa nama)'}</td>
                     <td>${menu.parent_id === '0' ? 'Root' : getMenuName(menu.parent_id)}</td>
                     <td>
                         <button class="btn-warning" onclick="editMenu('${menu.id}')">✏️ Edit</button>
@@ -293,7 +334,7 @@
         
         const formData = new FormData();
         formData.append("action", "addMenu");
-        formData.append("password", document.getElementById("password").value);
+        formData.append("password", getCurrentPassword());
         formData.append("parent_id", parent_id);
         formData.append("nama", nama);
         
@@ -304,7 +345,10 @@
                 showAlert("Menu berhasil ditambahkan!", "success");
                 document.getElementById("menuNama").value = ""; 
                 loadMenus(); 
-            } else showAlert("Gagal: " + json.message, "error");
+            } else {
+                showAlert("Gagal: " + json.message, "error");
+                if (json.message === "Password salah") logout();
+            }
         } catch (error) {
             showAlert("Error: " + error.message, "error");
         }
@@ -319,14 +363,19 @@
     async function updateMenu(id, nama) {
         const formData = new FormData();
         formData.append("action", "updateMenu");
-        formData.append("password", document.getElementById("password").value);
+        formData.append("password", getCurrentPassword());
         formData.append("id", id);
         formData.append("nama", nama);
         
         try {
             const resp = await fetch(API_URL, { method: "POST", body: formData });
             const json = await resp.json();
-            if (json.success) { showAlert("Menu berhasil diupdate!", "success"); loadMenus(); }
+            if (json.success) { 
+                showAlert("Menu berhasil diupdate!", "success"); 
+                loadMenus(); 
+            } else {
+                if (json.message === "Password salah") logout();
+            }
         } catch (error) {
             showAlert("Error: " + error.message, "error");
         }
@@ -336,13 +385,18 @@
         if (confirm("Yakin hapus menu ini?")) {
             const formData = new FormData();
             formData.append("action", "deleteMenu");
-            formData.append("password", document.getElementById("password").value);
+            formData.append("password", getCurrentPassword());
             formData.append("id", id);
             
             try {
                 const resp = await fetch(API_URL, { method: "POST", body: formData });
                 const json = await resp.json();
-                if (json.success) { showAlert("Menu berhasil dihapus!", "success"); loadMenus(); }
+                if (json.success) { 
+                    showAlert("Menu berhasil dihapus!", "success"); 
+                    loadMenus(); 
+                } else {
+                    if (json.message === "Password salah") logout();
+                }
             } catch (error) {
                 showAlert("Error: " + error.message, "error");
             }
@@ -357,7 +411,7 @@
         
         const formData = new FormData();
         formData.append("action", "addFaq");
-        formData.append("password", document.getElementById("password").value);
+        formData.append("password", getCurrentPassword());
         formData.append("menu_id", menu_id);
         formData.append("pertanyaan", pertanyaan);
         
@@ -379,6 +433,7 @@
                 loadFaqs();
             } else {
                 showAlert("Gagal: " + json.message, "error");
+                if (json.message === "Password salah") logout();
             }
         } catch (error) {
             showAlert("Error: " + error.message, "error");
@@ -399,7 +454,7 @@
                     <button class="btn-warning" onclick="editFaq('${faq.id}')">✏️ Edit</button>
                     <button class="btn-danger" onclick="deleteFaq('${faq.id}')">🗑️ Hapus</button>
                 </td>
-             </tr>`;
+              </tr>`;
         }
         
         html += '</tbody></table>';
@@ -425,9 +480,10 @@
     async function updateFaq(id, pertanyaan, jawabanArray) {
         const formData = new FormData();
         formData.append("action", "updateFaq");
-        formData.append("password", document.getElementById("password").value);
+        formData.append("password", getCurrentPassword());
         formData.append("id", id);
         formData.append("pertanyaan", pertanyaan);
+        formData.append("menu_id", document.getElementById("faqMenuId").value);
         
         for (let i = 0; i < 6; i++) {
             formData.append(`jawaban${i+1}`, jawabanArray[i] || "");
@@ -441,6 +497,7 @@
                 loadFaqs(); 
             } else {
                 showAlert("Gagal update: " + json.message, "error");
+                if (json.message === "Password salah") logout();
             }
         } catch (error) {
             showAlert("Error: " + error.message, "error");
@@ -451,7 +508,7 @@
         if (confirm("Yakin hapus FAQ ini?")) {
             const formData = new FormData();
             formData.append("action", "deleteFaq");
-            formData.append("password", document.getElementById("password").value);
+            formData.append("password", getCurrentPassword());
             formData.append("id", id);
             
             try {
@@ -460,6 +517,8 @@
                 if (json.success) { 
                     showAlert("FAQ berhasil dihapus!", "success"); 
                     loadFaqs(); 
+                } else {
+                    if (json.message === "Password salah") logout();
                 }
             } catch (error) {
                 showAlert("Error: " + error.message, "error");
@@ -483,12 +542,6 @@
             document.getElementById("securityPanel").classList.add("active"); 
             document.querySelectorAll(".tab-btn")[2].classList.add("active"); 
         }
-    }
-    
-    // Cek session login saat load
-    if (sessionStorage.getItem("adminLoggedIn") === "true") {
-        document.getElementById("password").value = "admin123"; // isi dengan password terakhir
-        login();
     }
 </script>
 </body>
