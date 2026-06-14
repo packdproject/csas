@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - HelpDesk Seller</title>
+    <title>Admin Panel - HelpDesk</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; }
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         .header { background: #3390ec; color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .login-box { background: white; max-width: 400px; margin: 100px auto; padding: 30px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .login-box { background: white; max-width: 400px; margin: 100px auto; padding: 30px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; }
         .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; }
-        .login-box button { width: 100%; padding: 12px; background: #3390ec; color: white; border: none; border-radius: 10px; cursor: pointer; }
+        .login-box button { width: 100%; padding: 12px; background: #3390ec; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; }
         .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .tab-btn { padding: 12px 24px; background: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
         .tab-btn.active { background: #3390ec; color: white; }
@@ -23,17 +23,11 @@
         .btn-primary { background: #3390ec; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
         .btn-danger { background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; }
         .btn-warning { background: #ffc107; color: #000; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; }
-        .btn-success { background: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; overflow-x: auto; display: block; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background: #f8f9fa; }
         .jawaban-list { display: flex; flex-wrap: wrap; gap: 4px; }
         .jawaban-badge { background: #e9ecef; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
-        .jawaban-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-        .jawaban-row input { flex: 1; }
-        .alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .modal {
             display: none;
             position: fixed;
@@ -51,71 +45,58 @@
             border-radius: 16px;
             width: 90%;
             max-width: 500px;
-            position: relative;
         }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .close {
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        @media (max-width: 768px) { th, td { display: table-cell; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close { font-size: 28px; font-weight: bold; cursor: pointer; }
+        .alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; position: fixed; top: 20px; right: 20px; z-index: 1100; min-width: 250px; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        @media (max-width: 768px) { table, thead, tbody, th, td, tr { display: block; } th { display: none; } td { display: block; padding: 8px; } }
     </style>
 </head>
 <body>
-<div class="container" id="app">
+<div class="container">
     <div class="header">
         <h1>📋 Admin Panel HelpDesk</h1>
-        <div>
-            <span id="adminStatus"></span>
-            <button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none; margin-left:10px;">Logout</button>
-        </div>
+        <button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none;">Logout</button>
     </div>
     
     <div id="alertMessage" class="alert"></div>
     
+    <!-- Login Panel -->
     <div id="loginPanel" class="login-box">
         <h2>🔐 Login Admin</h2>
         <input type="password" id="password" placeholder="Masukkan password" onkeypress="if(event.key==='Enter') login()">
         <button onclick="login()">Login</button>
-        <div style="margin-top: 10px; font-size: 12px; color: #666; text-align: center;">
-            Password default: Packdeliganteng
-        </div>
     </div>
     
+    <!-- Admin Panel -->
     <div id="adminPanel" style="display:none;">
         <div class="tab-buttons">
-            <button class="tab-btn active" onclick="showTab('menu')">📁 Menu Management</button>
-            <button class="tab-btn" onclick="showTab('faq')">❓ FAQ Management</button>
-            <button class="tab-btn" onclick="showTab('security')">🔒 Ganti Password</button>
+            <button class="tab-btn active" onclick="showTab('menu')">📁 Menu</button>
+            <button class="tab-btn" onclick="showTab('faq')">❓ FAQ</button>
         </div>
         
-        <!-- MENU PANEL -->
+        <!-- Menu Panel -->
         <div id="menuPanel" class="panel active">
             <h3>Tambah Menu Baru</h3>
             <div class="form-group">
                 <label>Parent Menu</label>
-                <select id="menuParentId">
-                    <option value="0">Root (Menu Utama)</option>
-                </select>
+                <select id="menuParentId"><option value="0">Root (Menu Utama)</option></select>
             </div>
             <div class="form-group">
                 <label>Nama Menu</label>
                 <input type="text" id="menuNama" placeholder="Contoh: 📦 Penjualan">
             </div>
-            <button class="btn-primary" onclick="addMenu()">➕ Tambah Menu</button>
+            <button class="btn-primary" onclick="addMenu()">➕ Tambah</button>
+            
             <h3 style="margin-top: 30px;">Daftar Menu</h3>
             <div id="menuList"></div>
         </div>
         
-        <!-- FAQ PANEL -->
+        <!-- FAQ Panel -->
         <div id="faqPanel" class="panel">
-            <h3>Tambah FAQ Baru (Support 6 Jawaban)</h3>
+            <h3>Tambah FAQ Baru</h3>
             <div class="form-group">
                 <label>Pilih Menu</label>
                 <select id="faqMenuId"></select>
@@ -124,281 +105,138 @@
                 <label>Pertanyaan</label>
                 <input type="text" id="faqPertanyaan" placeholder="Masukkan pertanyaan">
             </div>
-            
             <div class="form-group">
-                <label>Jawaban (6 kolom, isi sesuai kebutuhan)</label>
-                <div id="jawabanContainer">
-                    <div class="jawaban-row"><input type="text" id="jawaban1" placeholder="Jawaban 1"></div>
-                    <div class="jawaban-row"><input type="text" id="jawaban2" placeholder="Jawaban 2 (opsional)"></div>
-                    <div class="jawaban-row"><input type="text" id="jawaban3" placeholder="Jawaban 3 (opsional)"></div>
-                    <div class="jawaban-row"><input type="text" id="jawaban4" placeholder="Jawaban 4 (opsional)"></div>
-                    <div class="jawaban-row"><input type="text" id="jawaban5" placeholder="Jawaban 5 (opsional)"></div>
-                    <div class="jawaban-row"><input type="text" id="jawaban6" placeholder="Jawaban 6 (opsional)"></div>
-                </div>
+                <label>Jawaban (pisahkan dengan |, max 6)</label>
+                <textarea id="faqJawaban" rows="3" placeholder="Contoh: Jawaban 1|Jawaban 2|Jawaban 3"></textarea>
             </div>
-            
             <button class="btn-primary" onclick="addFaq()">➕ Tambah FAQ</button>
             
             <h3 style="margin-top: 30px;">Daftar FAQ</h3>
-            <div style="overflow-x: auto;">
-                <div id="faqList"></div>
-            </div>
-        </div>
-        
-        <!-- SECURITY PANEL -->
-        <div id="securityPanel" class="panel">
-            <h3>🔐 Ganti Password Admin</h3>
-            <div class="form-group">
-                <label>Password Saat Ini</label>
-                <input type="password" id="currentPassword" placeholder="Masukkan password saat ini">
-            </div>
-            <div class="form-group">
-                <label>Password Baru</label>
-                <input type="password" id="newPassword" placeholder="Minimal 4 karakter">
-            </div>
-            <div class="form-group">
-                <label>Konfirmasi Password Baru</label>
-                <input type="password" id="confirmPassword" placeholder="Ketik ulang password baru">
-            </div>
-            <button class="btn-success" onclick="changePassword()">🔄 Ganti Password</button>
-            
-            <hr style="margin: 30px 0;">
-            
-            <h3>📋 Informasi Keamanan</h3>
-            <ul style="margin-left: 20px; color: #666;">
-                <li>Password disimpan di Script Properties (lebih aman)</li>
-                <li>Ganti password secara berkala</li>
-                <li>Jangan bagikan password ke orang yang tidak berwenang</li>
-                <li>Gunakan kombinasi huruf, angka, dan simbol untuk password kuat</li>
-            </ul>
+            <div id="faqList"></div>
         </div>
     </div>
 </div>
 
-<!-- Modal for Edit Menu -->
+<!-- Modal Edit Menu -->
 <div id="editMenuModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>✏️ Edit Menu</h3>
-            <span class="close" onclick="closeEditMenuModal()">&times;</span>
-        </div>
-        <div class="form-group">
-            <label>Parent Menu</label>
-            <select id="editMenuParentId"></select>
-        </div>
-        <div class="form-group">
-            <label>Nama Menu</label>
-            <input type="text" id="editMenuNama" placeholder="Nama menu">
-        </div>
+        <div class="modal-header"><h3>✏️ Edit Menu</h3><span class="close" onclick="closeModal('editMenuModal')">&times;</span></div>
+        <div class="form-group"><label>Parent Menu</label><select id="editMenuParentId"></select></div>
+        <div class="form-group"><label>Nama Menu</label><input type="text" id="editMenuNama"></div>
         <input type="hidden" id="editMenuId">
-        <button class="btn-primary" onclick="updateMenuSubmit()">💾 Simpan Perubahan</button>
+        <button class="btn-primary" onclick="updateMenu()">💾 Simpan</button>
     </div>
 </div>
 
-<!-- Modal for Edit FAQ -->
+<!-- Modal Edit FAQ -->
 <div id="editFaqModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>✏️ Edit FAQ</h3>
-            <span class="close" onclick="closeEditFaqModal()">&times;</span>
-        </div>
-        <div class="form-group">
-            <label>Pilih Menu</label>
-            <select id="editFaqMenuId"></select>
-        </div>
-        <div class="form-group">
-            <label>Pertanyaan</label>
-            <input type="text" id="editFaqPertanyaan" placeholder="Pertanyaan">
-        </div>
-        <div class="form-group">
-            <label>Jawaban (pisahkan dengan |)</label>
-            <textarea id="editFaqJawaban" rows="4" placeholder="Contoh: Jawaban 1|Jawaban 2|Jawaban 3"></textarea>
-        </div>
+        <div class="modal-header"><h3>✏️ Edit FAQ</h3><span class="close" onclick="closeModal('editFaqModal')">&times;</span></div>
+        <div class="form-group"><label>Pilih Menu</label><select id="editFaqMenuId"></select></div>
+        <div class="form-group"><label>Pertanyaan</label><input type="text" id="editFaqPertanyaan"></div>
+        <div class="form-group"><label>Jawaban (pisahkan dengan |)</label><textarea id="editFaqJawaban" rows="3"></textarea></div>
         <input type="hidden" id="editFaqId">
-        <button class="btn-primary" onclick="updateFaqSubmit()">💾 Simpan Perubahan</button>
+        <button class="btn-primary" onclick="updateFaq()">💾 Simpan</button>
     </div>
 </div>
 
 <script>
-    // Ganti dengan URL Apps Script Anda
+    // GANTI DENGAN URL APPS SCRIPT ANDA
     const API_URL = "https://script.google.com/macros/s/AKfycbzQK3FdrEqkNN2EH6eAXU5b6JcOFYw6FAavFbecs-pgYBQXxcC8wrKzY9FgtINpv_ga/exec";
-    let isLoggedIn = false, menus = [], faqs = [];
+    
+    let menus = [], faqs = [];
 
-    function showAlert(message, type) {
-        const alertDiv = document.getElementById("alertMessage");
-        alertDiv.className = `alert alert-${type}`;
-        alertDiv.innerHTML = message;
-        alertDiv.style.display = "block";
-        setTimeout(() => {
-            alertDiv.style.display = "none";
-        }, 3000);
+    function showAlert(msg, type) {
+        const alert = document.getElementById("alertMessage");
+        alert.className = `alert alert-${type}`;
+        alert.innerHTML = msg;
+        alert.style.display = "block";
+        setTimeout(() => alert.style.display = "none", 3000);
     }
 
-    async function login() { 
+    async function login() {
         const password = document.getElementById("password").value;
-        if (!password) {
-            showAlert("Masukkan password!", "error");
-            return;
-        }
+        if (!password) { showAlert("Masukkan password!", "error"); return; }
         
         try {
-            showAlert("Memverifikasi password...", "success");
             const resp = await fetch(`${API_URL}?action=verifyPassword&password=${encodeURIComponent(password)}`);
             const json = await resp.json();
             
-            if (json.success) { 
-                isLoggedIn = true;
+            if (json.success) {
                 sessionStorage.setItem("adminPassword", password);
                 document.getElementById("loginPanel").style.display = "none";
                 document.getElementById("adminPanel").style.display = "block";
                 document.getElementById("logoutBtn").style.display = "inline-block";
-                document.getElementById("adminStatus").innerHTML = "👤 Admin";
                 loadData();
                 showAlert("Login berhasil!", "success");
             } else {
-                showAlert("Password salah! Gunakan password yang benar.", "error");
+                showAlert("Password salah!", "error");
             }
         } catch (error) {
             showAlert("Error: " + error.message, "error");
         }
     }
     
-    function logout() { 
-        isLoggedIn = false;
+    function logout() {
         sessionStorage.removeItem("adminPassword");
         document.getElementById("loginPanel").style.display = "block";
         document.getElementById("adminPanel").style.display = "none";
         document.getElementById("logoutBtn").style.display = "none";
-        document.getElementById("adminStatus").innerHTML = "";
         document.getElementById("password").value = "";
-        showAlert("Anda telah logout", "success");
+        showAlert("Logout berhasil", "success");
     }
     
-    function getCurrentPassword() {
-        return sessionStorage.getItem("adminPassword") || document.getElementById("password").value;
-    }
+    function getPassword() { return sessionStorage.getItem("adminPassword"); }
     
-    async function changePassword() {
-        const currentPassword = document.getElementById("currentPassword").value;
-        const newPassword = document.getElementById("newPassword").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
-        
-        if (!currentPassword || !newPassword) {
-            showAlert("Semua field harus diisi!", "error");
-            return;
-        }
-        
-        if (newPassword.length < 4) {
-            showAlert("Password baru minimal 4 karakter!", "error");
-            return;
-        }
-        
-        if (newPassword !== confirmPassword) {
-            showAlert("Konfirmasi password baru tidak cocok!", "error");
-            return;
-        }
-        
-        const formData = new FormData();
-        formData.append("action", "changePassword");
-        formData.append("currentPassword", currentPassword);
-        formData.append("newPassword", newPassword);
-        
+    async function loadData() { await loadMenus(); await loadFaqs(); }
+    
+    async function loadMenus() {
         try {
-            const resp = await fetch(API_URL, { method: "POST", body: formData });
+            const resp = await fetch(`${API_URL}?action=getAllMenus`);
             const json = await resp.json();
-            
-            if (json.success) {
-                showAlert("Password berhasil diubah! Silakan login ulang.", "success");
-                sessionStorage.setItem("adminPassword", newPassword);
-                document.getElementById("currentPassword").value = "";
-                document.getElementById("newPassword").value = "";
-                document.getElementById("confirmPassword").value = "";
-                
-                setTimeout(() => {
-                    if (confirm("Password telah diubah. Apakah ingin login ulang?")) {
-                        logout();
-                    }
-                }, 2000);
-            } else {
-                showAlert("Gagal: " + json.message, "error");
-            }
-        } catch (error) {
-            showAlert("Error: " + error.message, "error");
-        }
+            if (json.success) { menus = json.data; renderMenuList(); renderMenuSelect(); }
+        } catch (error) { showAlert("Gagal load menu", "error"); }
     }
     
-    async function loadData() { 
-        await loadMenus(); 
-        await loadFaqs(); 
-    }
-    
-    async function loadMenus() { 
+    async function loadFaqs() {
         try {
-            const resp = await fetch(`${API_URL}?action=getAllMenus`); 
-            const json = await resp.json(); 
-            if (json.success) { 
-                menus = json.data; 
-                renderMenuList(); 
-                renderMenuSelect(); 
-            }
-        } catch (error) {
-            showAlert("Gagal load menu: " + error.message, "error");
-        }
-    }
-    
-    async function loadFaqs() { 
-        try {
-            const resp = await fetch(`${API_URL}?action=getAllFaqs`); 
-            const json = await resp.json(); 
-            if (json.success) { 
-                faqs = json.data; 
-                renderFaqList(); 
-            }
-        } catch (error) {
-            showAlert("Gagal load FAQ: " + error.message, "error");
-        }
+            const resp = await fetch(`${API_URL}?action=getAllFaqs`);
+            const json = await resp.json();
+            if (json.success) { faqs = json.data; renderFaqList(); }
+        } catch (error) { showAlert("Gagal load FAQ", "error"); }
     }
     
     function renderMenuList() {
         const buildTree = (parentId, level = 0) => {
-            const children = menus.filter(m => m.parent_id === parentId);
             let html = '';
-            for (const menu of children) {
-                html += `<tr>
-                    <td style="padding-left: ${level * 20}px">${'—'.repeat(level)} ${menu.nama || '(tanpa nama)'}</td>
-                    <td>${menu.parent_id === '0' ? 'Root' : getMenuName(menu.parent_id)}</td>
-                    <td>
-                        <button class="btn-warning" onclick="openEditMenuModal('${menu.id}')">✏️ Edit</button>
-                        <button class="btn-danger" onclick="deleteMenu('${menu.id}')">🗑️ Hapus</button>
-                    </td>
-                </tr>`;
+            for (const menu of menus.filter(m => m.parent_id === parentId)) {
+                html += `<tr><td style="padding-left:${level*20}px">${'—'.repeat(level)} ${escapeHtml(menu.nama)}</td>
+                        <td>${menu.parent_id === '0' ? 'Root' : getMenuName(menu.parent_id)}</td>
+                        <td><button class="btn-warning" onclick="openEditMenu('${menu.id}')">✏️</button>
+                        <button class="btn-danger" onclick="deleteMenu('${menu.id}')">🗑️</button></td></tr>`;
                 html += buildTree(menu.id, level + 1);
             }
             return html;
         };
-        document.getElementById("menuList").innerHTML = `<table><thead><tr><th>Nama Menu</th><th>Parent</th><th>Aksi</th></tr></thead><tbody>${buildTree("0")}</tbody></table>`;
+        document.getElementById("menuList").innerHTML = `<td><thead><tr><th>Nama Menu</th><th>Parent</th><th>Aksi</th></tr></thead><tbody>${buildTree("0")}</tbody></table>`;
     }
     
     function renderMenuSelect() {
         const buildOptions = (parentId, level = 0, excludeId = null) => {
-            const children = menus.filter(m => m.parent_id === parentId && m.id !== excludeId);
             let html = '';
-            for (const menu of children) {
-                html += `<option value="${menu.id}">${'—'.repeat(level)} ${menu.nama || menu.id}</option>`;
+            for (const menu of menus.filter(m => m.parent_id === parentId && m.id !== excludeId)) {
+                html += `<option value="${menu.id}">${'—'.repeat(level)} ${escapeHtml(menu.nama)}</option>`;
                 html += buildOptions(menu.id, level + 1, excludeId);
             }
             return html;
         };
-        
         const options = `<option value="0">Root (Menu Utama)</option>${buildOptions("0")}`;
         document.getElementById("menuParentId").innerHTML = options;
         document.getElementById("faqMenuId").innerHTML = options;
     }
     
-    function getMenuName(id) { 
-        const menu = menus.find(m => m.id === id); 
-        return menu ? menu.nama : id; 
-    }
+    function getMenuName(id) { const m = menus.find(m => m.id === id); return m ? m.nama : id; }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m;}); }
     
     async function addMenu() {
         const parent_id = document.getElementById("menuParentId").value;
@@ -407,68 +245,47 @@
         
         const formData = new FormData();
         formData.append("action", "addMenu");
-        formData.append("password", getCurrentPassword());
+        formData.append("password", getPassword());
         formData.append("parent_id", parent_id);
         formData.append("nama", nama);
         
         try {
             const resp = await fetch(API_URL, { method: "POST", body: formData });
             const json = await resp.json();
-            if (json.success) { 
-                showAlert("Menu berhasil ditambahkan!", "success");
-                document.getElementById("menuNama").value = ""; 
-                loadMenus(); 
-            } else {
-                showAlert("Gagal: " + json.message, "error");
-                if (json.message === "Password salah") logout();
-            }
-        } catch (error) {
-            showAlert("Error: " + error.message, "error");
-        }
+            if (json.success) { showAlert("Menu ditambahkan!", "success"); document.getElementById("menuNama").value = ""; loadMenus(); }
+            else if (json.message === "Password salah") logout();
+            else showAlert("Gagal: " + json.message, "error");
+        } catch (error) { showAlert("Error: " + error.message, "error"); }
     }
     
-    function openEditMenuModal(id) {
+    function openEditMenu(id) {
         const menu = menus.find(m => m.id === id);
         if (!menu) return;
-        
         document.getElementById("editMenuId").value = menu.id;
         document.getElementById("editMenuNama").value = menu.nama;
         
-        // Build parent options excluding current menu
         const buildOptions = (parentId, level = 0) => {
-            const children = menus.filter(m => m.parent_id === parentId && m.id !== id);
             let html = '';
-            for (const child of children) {
-                html += `<option value="${child.id}">${'—'.repeat(level)} ${child.nama || child.id}</option>`;
-                html += buildOptions(child.id, level + 1);
+            for (const m of menus.filter(m => m.parent_id === parentId && m.id !== id)) {
+                html += `<option value="${m.id}">${'—'.repeat(level)} ${escapeHtml(m.nama)}</option>`;
+                html += buildOptions(m.id, level + 1);
             }
             return html;
         };
-        
-        let options = `<option value="0">Root (Menu Utama)</option>${buildOptions("0")}`;
-        document.getElementById("editMenuParentId").innerHTML = options;
+        document.getElementById("editMenuParentId").innerHTML = `<option value="0">Root (Menu Utama)</option>${buildOptions("0")}`;
         document.getElementById("editMenuParentId").value = menu.parent_id;
-        
         document.getElementById("editMenuModal").style.display = "block";
     }
     
-    function closeEditMenuModal() {
-        document.getElementById("editMenuModal").style.display = "none";
-    }
-    
-    async function updateMenuSubmit() {
+    async function updateMenu() {
         const id = document.getElementById("editMenuId").value;
         const parent_id = document.getElementById("editMenuParentId").value;
         const nama = document.getElementById("editMenuNama").value;
-        
-        if (!nama) {
-            showAlert("Nama menu harus diisi!", "error");
-            return;
-        }
+        if (!nama) { showAlert("Nama harus diisi!", "error"); return; }
         
         const formData = new FormData();
         formData.append("action", "updateMenu");
-        formData.append("password", getCurrentPassword());
+        formData.append("password", getPassword());
         formData.append("id", id);
         formData.append("parent_id", parent_id);
         formData.append("nama", nama);
@@ -476,223 +293,140 @@
         try {
             const resp = await fetch(API_URL, { method: "POST", body: formData });
             const json = await resp.json();
-            if (json.success) {
-                showAlert("Menu berhasil diupdate!", "success");
-                closeEditMenuModal();
-                loadMenus();
-            } else {
-                showAlert("Gagal: " + json.message, "error");
-                if (json.message === "Password salah") logout();
-            }
-        } catch (error) {
-            showAlert("Error: " + error.message, "error");
-        }
+            if (json.success) { showAlert("Menu diupdate!", "success"); closeModal("editMenuModal"); loadMenus(); }
+            else if (json.message === "Password salah") logout();
+            else showAlert("Gagal: " + json.message, "error");
+        } catch (error) { showAlert("Error: " + error.message, "error"); }
     }
     
     async function deleteMenu(id) {
-        if (confirm("Yakin hapus menu ini?")) {
-            const formData = new FormData();
-            formData.append("action", "deleteMenu");
-            formData.append("password", getCurrentPassword());
-            formData.append("id", id);
-            
-            try {
-                const resp = await fetch(API_URL, { method: "POST", body: formData });
-                const json = await resp.json();
-                if (json.success) { 
-                    showAlert("Menu berhasil dihapus!", "success"); 
-                    loadMenus(); 
-                } else {
-                    if (json.message === "Password salah") logout();
-                }
-            } catch (error) {
-                showAlert("Error: " + error.message, "error");
-            }
-        }
+        if (!confirm("Yakin hapus menu ini?")) return;
+        const formData = new FormData();
+        formData.append("action", "deleteMenu");
+        formData.append("password", getPassword());
+        formData.append("id", id);
+        
+        try {
+            const resp = await fetch(API_URL, { method: "POST", body: formData });
+            const json = await resp.json();
+            if (json.success) { showAlert("Menu dihapus!", "success"); loadMenus(); }
+            else if (json.message === "Password salah") logout();
+        } catch (error) { showAlert("Error: " + error.message, "error"); }
     }
     
     async function addFaq() {
         const menu_id = document.getElementById("faqMenuId").value;
         const pertanyaan = document.getElementById("faqPertanyaan").value;
+        const jawabanText = document.getElementById("faqJawaban").value;
         
         if (!pertanyaan) { showAlert("Pertanyaan harus diisi!", "error"); return; }
         
+        const jawabanArray = jawabanText ? jawabanText.split("|").map(j => j.trim()) : [];
+        
         const formData = new FormData();
         formData.append("action", "addFaq");
-        formData.append("password", getCurrentPassword());
+        formData.append("password", getPassword());
         formData.append("menu_id", menu_id);
         formData.append("pertanyaan", pertanyaan);
-        
-        for (let i = 1; i <= 6; i++) {
-            let jawaban = document.getElementById(`jawaban${i}`).value;
-            formData.append(`jawaban${i}`, jawaban && jawaban.trim() ? jawaban.trim() : "");
-        }
+        for (let i = 0; i < 6; i++) formData.append(`jawaban${i+1}`, jawabanArray[i] || "");
         
         try {
             const resp = await fetch(API_URL, { method: "POST", body: formData });
             const json = await resp.json();
-            
             if (json.success) {
-                showAlert("FAQ berhasil ditambahkan!", "success");
+                showAlert("FAQ ditambahkan!", "success");
                 document.getElementById("faqPertanyaan").value = "";
-                for (let i = 1; i <= 6; i++) {
-                    document.getElementById(`jawaban${i}`).value = "";
-                }
+                document.getElementById("faqJawaban").value = "";
                 loadFaqs();
-            } else {
-                showAlert("Gagal: " + json.message, "error");
-                if (json.message === "Password salah") logout();
-            }
-        } catch (error) {
-            showAlert("Error: " + error.message, "error");
-        }
+            } else if (json.message === "Password salah") logout();
+            else showAlert("Gagal: " + json.message, "error");
+        } catch (error) { showAlert("Error: " + error.message, "error"); }
     }
     
     function renderFaqList() {
-        let html = '<table><thead><tr><th>Pertanyaan</th><th>Menu</th><th>Jawaban (1-6)</th><th>Aksi</th></tr></thead><tbody>';
-        
+        let html = '<table><thead><tr><th>Pertanyaan</th><th>Menu</th><th>Jawaban</th><th>Aksi</th></tr></thead><tbody>';
         for (const faq of faqs) {
-            const jawabanHtml = (faq.jawaban_list || []).map((j, i) => `<span class="jawaban-badge">${i+1}. ${j.substring(0, 35)}${j.length > 35 ? '...' : ''}</span>`).join('');
-            
-            html += `<tr>
-                <td style="max-width:200px; word-break:break-word;">${escapeHtml(faq.pertanyaan)}</td>
-                <td>${getMenuName(faq.menu_id)}</td>
-                <td><div class="jawaban-list">${jawabanHtml || '-'}</div></td>
-                <td>
-                    <button class="btn-warning" onclick="openEditFaqModal('${faq.id}')">✏️ Edit</button>
-                    <button class="btn-danger" onclick="deleteFaq('${faq.id}')">🗑️ Hapus</button>
-                </td>
-              </tr>`;
+            const jawabanHtml = (faq.jawaban_list || []).map(j => `<span class="jawaban-badge">${j.substring(0, 30)}${j.length > 30 ? '...' : ''}</span>`).join('');
+            html += `<tr><td>${escapeHtml(faq.pertanyaan)}</td><td>${getMenuName(faq.menu_id)}</td><td><div class="jawaban-list">${jawabanHtml || '-'}</div></td>
+                    <td><button class="btn-warning" onclick="openEditFaq('${faq.id}')">✏️</button>
+                    <button class="btn-danger" onclick="deleteFaq('${faq.id}')">🗑️</button></td></tr>`;
         }
-        
         html += '</tbody></table>';
-        document.getElementById("faqList").innerHTML = html || '<p>Tidak ada data FAQ</p>';
+        document.getElementById("faqList").innerHTML = html || '<p>Tidak ada data</p>';
     }
     
-    function openEditFaqModal(id) {
+    function openEditFaq(id) {
         const faq = faqs.find(f => f.id === id);
         if (!faq) return;
-        
         document.getElementById("editFaqId").value = faq.id;
         document.getElementById("editFaqPertanyaan").value = faq.pertanyaan;
         document.getElementById("editFaqJawaban").value = (faq.jawaban_list || []).join("|");
         
-        // Build menu options
         const buildOptions = (parentId, level = 0) => {
-            const children = menus.filter(m => m.parent_id === parentId);
             let html = '';
-            for (const menu of children) {
-                html += `<option value="${menu.id}">${'—'.repeat(level)} ${menu.nama || menu.id}</option>`;
-                html += buildOptions(menu.id, level + 1);
+            for (const m of menus.filter(m => m.parent_id === parentId)) {
+                html += `<option value="${m.id}">${'—'.repeat(level)} ${escapeHtml(m.nama)}</option>`;
+                html += buildOptions(m.id, level + 1);
             }
             return html;
         };
-        
-        let options = `<option value="0">Root (Menu Utama)</option>${buildOptions("0")}`;
-        document.getElementById("editFaqMenuId").innerHTML = options;
+        document.getElementById("editFaqMenuId").innerHTML = `<option value="0">Root (Menu Utama)</option>${buildOptions("0")}`;
         document.getElementById("editFaqMenuId").value = faq.menu_id;
-        
         document.getElementById("editFaqModal").style.display = "block";
     }
     
-    function closeEditFaqModal() {
-        document.getElementById("editFaqModal").style.display = "none";
-    }
-    
-    async function updateFaqSubmit() {
+    async function updateFaq() {
         const id = document.getElementById("editFaqId").value;
         const menu_id = document.getElementById("editFaqMenuId").value;
         const pertanyaan = document.getElementById("editFaqPertanyaan").value;
         const jawabanText = document.getElementById("editFaqJawaban").value;
         
-        if (!pertanyaan) {
-            showAlert("Pertanyaan harus diisi!", "error");
-            return;
-        }
+        if (!pertanyaan) { showAlert("Pertanyaan harus diisi!", "error"); return; }
         
-        const jawabanArray = jawabanText ? jawabanText.split("|").map(j => j.trim()).filter(j => j !== "") : [];
+        const jawabanArray = jawabanText ? jawabanText.split("|").map(j => j.trim()) : [];
         
         const formData = new FormData();
         formData.append("action", "updateFaq");
-        formData.append("password", getCurrentPassword());
+        formData.append("password", getPassword());
         formData.append("id", id);
         formData.append("menu_id", menu_id);
         formData.append("pertanyaan", pertanyaan);
-        
-        for (let i = 0; i < 6; i++) {
-            formData.append(`jawaban${i+1}`, jawabanArray[i] || "");
-        }
+        for (let i = 0; i < 6; i++) formData.append(`jawaban${i+1}`, jawabanArray[i] || "");
         
         try {
             const resp = await fetch(API_URL, { method: "POST", body: formData });
             const json = await resp.json();
-            if (json.success) {
-                showAlert("FAQ berhasil diupdate!", "success");
-                closeEditFaqModal();
-                loadFaqs();
-            } else {
-                showAlert("Gagal update: " + json.message, "error");
-                if (json.message === "Password salah") logout();
-            }
-        } catch (error) {
-            showAlert("Error: " + error.message, "error");
-        }
+            if (json.success) { showAlert("FAQ diupdate!", "success"); closeModal("editFaqModal"); loadFaqs(); }
+            else if (json.message === "Password salah") logout();
+            else showAlert("Gagal: " + json.message, "error");
+        } catch (error) { showAlert("Error: " + error.message, "error"); }
     }
     
     async function deleteFaq(id) {
-        if (confirm("Yakin hapus FAQ ini?")) {
-            const formData = new FormData();
-            formData.append("action", "deleteFaq");
-            formData.append("password", getCurrentPassword());
-            formData.append("id", id);
-            
-            try {
-                const resp = await fetch(API_URL, { method: "POST", body: formData });
-                const json = await resp.json();
-                if (json.success) { 
-                    showAlert("FAQ berhasil dihapus!", "success"); 
-                    loadFaqs(); 
-                } else {
-                    if (json.message === "Password salah") logout();
-                }
-            } catch (error) {
-                showAlert("Error: " + error.message, "error");
-            }
-        }
-    }
-    
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+        if (!confirm("Yakin hapus FAQ ini?")) return;
+        const formData = new FormData();
+        formData.append("action", "deleteFaq");
+        formData.append("password", getPassword());
+        formData.append("id", id);
+        
+        try {
+            const resp = await fetch(API_URL, { method: "POST", body: formData });
+            const json = await resp.json();
+            if (json.success) { showAlert("FAQ dihapus!", "success"); loadFaqs(); }
+            else if (json.message === "Password salah") logout();
+        } catch (error) { showAlert("Error: " + error.message, "error"); }
     }
     
     function showTab(tab) {
         document.getElementById("menuPanel").classList.remove("active");
         document.getElementById("faqPanel").classList.remove("active");
-        document.getElementById("securityPanel").classList.remove("active");
         document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-        
-        if (tab === "menu") { 
-            document.getElementById("menuPanel").classList.add("active"); 
-            document.querySelectorAll(".tab-btn")[0].classList.add("active"); 
-        } else if (tab === "faq") { 
-            document.getElementById("faqPanel").classList.add("active"); 
-            document.querySelectorAll(".tab-btn")[1].classList.add("active"); 
-        } else { 
-            document.getElementById("securityPanel").classList.add("active"); 
-            document.querySelectorAll(".tab-btn")[2].classList.add("active"); 
-        }
+        if (tab === "menu") { document.getElementById("menuPanel").classList.add("active"); document.querySelectorAll(".tab-btn")[0].classList.add("active"); }
+        else { document.getElementById("faqPanel").classList.add("active"); document.querySelectorAll(".tab-btn")[1].classList.add("active"); }
     }
     
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const menuModal = document.getElementById("editMenuModal");
-        const faqModal = document.getElementById("editFaqModal");
-        if (event.target === menuModal) closeEditMenuModal();
-        if (event.target === faqModal) closeEditFaqModal();
-    }
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
+    window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = "none"; }
 </script>
 </body>
 </html>
