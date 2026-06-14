@@ -4,60 +4,63 @@ const FaqManager = {
 
     init() {
         this.container = document.getElementById('faqContainer');
+        if (CONFIG.DEBUG) console.log('✅ FaqManager initialized');
     },
 
-    /**
-     * Menampilkan daftar FAQ
-     */
     render(faqList) {
         if (!this.container) return;
 
-        if (!faqList || faqList.length === 0) {
-            this.container.innerHTML = '<div class="empty-state">Tidak ada FAQ untuk menu ini</div>';
+        // VALIDASI: Pastikan faqList adalah array
+        if (!faqList || !Array.isArray(faqList) || faqList.length === 0) {
+            this.container.innerHTML = '<div class="empty-state">📋 Tidak ada FAQ untuk menu ini</div>';
             return;
         }
 
         this.container.innerHTML = '';
+        
         faqList.forEach((faq, index) => {
+            if (!faq || !faq.pertanyaan) return;
+            
             const card = document.createElement('div');
             card.className = 'faq-card';
-            card.dataset.id = faq.id;
+            card.dataset.id = faq.id || index;
 
-            // Header Pertanyaan
             const questionDiv = document.createElement('div');
             questionDiv.className = 'faq-question';
             questionDiv.innerHTML = `
                 <span>${this.escapeHtml(faq.pertanyaan)}</span>
                 <i class="fas fa-chevron-down"></i>
             `;
+            
             questionDiv.addEventListener('click', () => {
                 const answerDiv = card.querySelector('.faq-answer');
                 const icon = questionDiv.querySelector('i');
                 if (answerDiv) {
                     answerDiv.classList.toggle('open');
-                    icon.classList.toggle('fa-chevron-up');
-                    icon.classList.toggle('fa-chevron-down');
+                    if (icon) {
+                        icon.classList.toggle('fa-chevron-up');
+                        icon.classList.toggle('fa-chevron-down');
+                    }
                 }
             });
 
-            // Body Jawaban
             const answerDiv = document.createElement('div');
             answerDiv.className = 'faq-answer';
-            answerDiv.innerHTML = this.formatJawaban(faq.jawaban);
+            answerDiv.innerHTML = this.formatJawaban(faq.jawaban || 'Tidak ada jawaban');
 
             card.appendChild(questionDiv);
             card.appendChild(answerDiv);
             this.container.appendChild(card);
         });
+        
+        if (CONFIG.DEBUG) console.log(`📄 Rendered ${faqList.length} FAQs`);
     },
 
-    /**
-     * Menampilkan hasil pencarian dengan highlight keyword
-     */
     renderSearchResults(faqList, keyword) {
         if (!this.container) return;
-        if (!faqList || faqList.length === 0) {
-            this.container.innerHTML = '<div class="empty-state">Tidak ditemukan hasil untuk "' + this.escapeHtml(keyword) + '"</div>';
+        
+        if (!faqList || !Array.isArray(faqList) || faqList.length === 0) {
+            this.container.innerHTML = `<div class="empty-state">🔍 Tidak ditemukan hasil untuk "${this.escapeHtml(keyword)}"</div>`;
             return;
         }
 
@@ -65,12 +68,13 @@ const FaqManager = {
         const regex = new RegExp(`(${this.escapeRegex(keyword)})`, 'gi');
 
         faqList.forEach(faq => {
+            if (!faq || !faq.pertanyaan) return;
+            
             const card = document.createElement('div');
             card.className = 'faq-card';
 
             const highlightedQuestion = faq.pertanyaan.replace(regex, `<mark class="highlight">$1</mark>`);
-            let highlightedAnswer = faq.jawaban.replace(regex, `<mark class="highlight">$1</mark>`);
-            // Konversi newline ke <br>
+            let highlightedAnswer = (faq.jawaban || '').replace(regex, `<mark class="highlight">$1</mark>`);
             highlightedAnswer = highlightedAnswer.replace(/\n/g, '<br>');
 
             const questionDiv = document.createElement('div');
@@ -84,8 +88,10 @@ const FaqManager = {
             questionDiv.addEventListener('click', () => {
                 answerDiv.classList.toggle('open');
                 const icon = questionDiv.querySelector('i');
-                icon.classList.toggle('fa-chevron-up');
-                icon.classList.toggle('fa-chevron-down');
+                if (icon) {
+                    icon.classList.toggle('fa-chevron-up');
+                    icon.classList.toggle('fa-chevron-down');
+                }
             });
 
             card.appendChild(questionDiv);
@@ -108,23 +114,20 @@ const FaqManager = {
 
     escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
-        });
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     },
 
     escapeRegex(str) {
-        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
     formatJawaban(text) {
         if (!text) return '';
-        // Ganti newline dengan <br>
-        return text.replace(/\n/g, '<br>');
+        return String(text).replace(/\n/g, '<br>');
     }
 };
