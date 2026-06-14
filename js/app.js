@@ -1,22 +1,33 @@
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 App starting...');
+    
     // Inisialisasi komponen
     FaqManager.init();
     SearchHandler.init();
 
-    // DEFINE FUNGSI GLOBAL SEBELUM DIGUNAKAN
+    // DEFINE GLOBAL FUNCTION
     window.loadFaqByMenu = async (menuId) => {
-        console.log('Loading FAQ for menu:', menuId);
-        // Bersihkan search box
+        console.log('📂 Loading FAQ for menu:', menuId);
+        
+        if (!menuId) {
+            console.warn('No menuId provided');
+            return;
+        }
+        
+        // Clear search
         if (SearchHandler.clearSearch) {
             SearchHandler.clearSearch();
         }
+        
         FaqManager.showLoading();
+        
         try {
             const faqData = await API.getFaqByMenu(menuId);
+            console.log(`📋 Received ${faqData.length} FAQs`);
             FaqManager.render(faqData);
         } catch (err) {
-            console.error('Error loading FAQ:', err);
+            console.error('❌ Error loading FAQ:', err);
             FaqManager.showError('Gagal memuat FAQ: ' + err.message);
         }
     };
@@ -28,29 +39,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
+        console.log('📡 Fetching menu tree...');
         const menuTree = await API.getMenuTree();
-        console.log('Menu tree loaded:', menuTree);
+        console.log('🌲 Menu tree received:', menuTree);
+        
         Sidebar.render(menuTree);
         
-        // Jika ada menu pertama, pilih secara otomatis
-        if (menuTree && menuTree.length > 0) {
-            const firstMenuId = menuTree[0].id;
+        // Auto-select first menu
+        if (menuTree && Array.isArray(menuTree) && menuTree.length > 0) {
+            const firstMenu = menuTree[0];
+            const firstMenuId = firstMenu.id;
+            console.log('🎯 Auto-selecting menu:', firstMenuId);
+            
             Sidebar.setActive(firstMenuId);
             await window.loadFaqByMenu(firstMenuId);
+            
             const pageTitle = document.getElementById('pageTitle');
-            if (pageTitle) pageTitle.textContent = menuTree[0].nama;
+            if (pageTitle) pageTitle.textContent = firstMenu.nama || 'FAQ Seller';
         } else {
+            console.warn('No menu items found');
             FaqManager.render([]);
         }
+        
+        console.log('✅ App ready!');
+        
     } catch (err) {
-        console.error('Error loading menu:', err);
+        console.error('❌ Fatal error:', err);
         if (menuContainer) {
-            menuContainer.innerHTML = `<div class="error">❌ Gagal memuat menu: ${err.message}<br><br>
-            <small>Pastikan:<br>
-            1. URL API benar di config.js<br>
-            2. Apps Script sudah di-deploy<br>
-            3. Koneksi internet aktif</small></div>`;
+            menuContainer.innerHTML = `<div class="error">
+                <strong>❌ Gagal memuat menu</strong><br>
+                ${err.message}<br><br>
+                <small>💡 Tips:<br>
+                - Cek koneksi internet<br>
+                - Pastikan URL API benar di config.js<br>
+                - Buka console (F12) untuk detail<br>
+                - Refresh halaman (Ctrl+F5)</small>
+            </div>`;
         }
-        FaqManager.showError('Tidak dapat memuat data menu. ' + err.message);
+        FaqManager.showError('Tidak dapat memuat data. ' + err.message);
     }
 });
