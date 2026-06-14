@@ -17,8 +17,10 @@ const SearchHandler = {
             if (keyword.length === 0) {
                 // Jika kosong, reload FAQ dari menu aktif
                 const activeId = Sidebar.currentActiveId;
-                if (activeId) {
+                if (activeId && typeof window.loadFaqByMenu === 'function') {
                     window.loadFaqByMenu(activeId);
+                } else if (activeId) {
+                    console.warn('loadFaqByMenu not ready');
                 } else {
                     FaqManager.render([]);
                 }
