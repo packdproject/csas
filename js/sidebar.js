@@ -61,14 +61,30 @@ const Sidebar = {
             div.appendChild(toggle);
         }
 
-        // Event klik untuk memuat FAQ
+        // Event klik untuk memuat FAQ - PERBAIKAN: Pengecekan function exist
         div.addEventListener('click', (e) => {
             // Jangan trigger jika klik pada toggle icon
             if (e.target.classList.contains('toggle-icon')) return;
             this.setActive(node.id);
+            
+            // Cek apakah fungsi loadFaqByMenu sudah tersedia
             if (typeof window.loadFaqByMenu === 'function') {
                 window.loadFaqByMenu(node.id);
+            } else {
+                console.warn('loadFaqByMenu not ready yet, retrying in 100ms');
+                setTimeout(() => {
+                    if (typeof window.loadFaqByMenu === 'function') {
+                        window.loadFaqByMenu(node.id);
+                    } else {
+                        console.error('loadFaqByMenu still not available');
+                        const faqContainer = document.getElementById('faqContainer');
+                        if (faqContainer) {
+                            faqContainer.innerHTML = '<div class="error">❌ Sistem belum siap. Silakan refresh halaman.</div>';
+                        }
+                    }
+                }, 100);
             }
+            
             // Update judul halaman
             const pageTitle = document.getElementById('pageTitle');
             if (pageTitle) pageTitle.textContent = node.nama;
