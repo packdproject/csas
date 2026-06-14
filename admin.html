@@ -12,7 +12,7 @@
         .login-box { background: white; max-width: 400px; margin: 100px auto; padding: 30px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; }
         .login-box button { width: 100%; padding: 12px; background: #3390ec; color: white; border: none; border-radius: 10px; cursor: pointer; }
-        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .tab-btn { padding: 12px 24px; background: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
         .tab-btn.active { background: #3390ec; color: white; }
         .panel { display: none; background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
@@ -23,6 +23,7 @@
         .btn-primary { background: #3390ec; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
         .btn-danger { background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; }
         .btn-warning { background: #ffc107; color: #000; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-success { background: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; overflow-x: auto; display: block; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background: #f8f9fa; }
@@ -30,15 +31,26 @@
         .jawaban-badge { background: #e9ecef; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
         .jawaban-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
         .jawaban-row input { flex: 1; }
+        .alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         @media (max-width: 768px) { th, td { display: table-cell; } }
     </style>
 </head>
 <body>
 <div class="container" id="app">
     <div class="header"><h1>📋 Admin Panel HelpDesk</h1><div><span id="adminStatus"></span><button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none; margin-left:10px;">Logout</button></div></div>
-    <div id="loginPanel" class="login-box"><h2>🔐 Login Admin</h2><input type="password" id="password" placeholder="Masukkan password"><button onclick="login()">Login</button></div>
+    
+    <div id="alertMessage" class="alert"></div>
+    
+    <div id="loginPanel" class="login-box"><h2>🔐 Login Admin</h2><input type="password" id="password" placeholder="Masukkan password" onkeypress="if(event.key==='Enter') login()"><button onclick="login()">Login</button></div>
+    
     <div id="adminPanel" style="display:none;">
-        <div class="tab-buttons"><button class="tab-btn active" onclick="showTab('menu')">📁 Menu Management</button><button class="tab-btn" onclick="showTab('faq')">❓ FAQ Management</button></div>
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('menu')">📁 Menu Management</button>
+            <button class="tab-btn" onclick="showTab('faq')">❓ FAQ Management</button>
+            <button class="tab-btn" onclick="showTab('security')">🔒 Security</button>
+        </div>
         
         <!-- MENU PANEL -->
         <div id="menuPanel" class="panel active">
@@ -75,6 +87,34 @@
                 <div id="faqList"></div>
             </div>
         </div>
+        
+        <!-- SECURITY PANEL -->
+        <div id="securityPanel" class="panel">
+            <h3>🔐 Ganti Password Admin</h3>
+            <div class="form-group">
+                <label>Password Saat Ini</label>
+                <input type="password" id="currentPassword" placeholder="Masukkan password saat ini">
+            </div>
+            <div class="form-group">
+                <label>Password Baru</label>
+                <input type="password" id="newPassword" placeholder="Minimal 4 karakter">
+            </div>
+            <div class="form-group">
+                <label>Konfirmasi Password Baru</label>
+                <input type="password" id="confirmPassword" placeholder="Ketik ulang password baru">
+            </div>
+            <button class="btn-success" onclick="changePassword()">🔄 Ganti Password</button>
+            
+            <hr style="margin: 30px 0;">
+            
+            <h3>📋 Informasi Keamanan</h3>
+            <ul style="margin-left: 20px; color: #666;">
+                <li>Password disimpan di Script Properties (lebih aman)</li>
+                <li>Ganti password secara berkala</li>
+                <li>Jangan bagikan password ke orang yang tidak berwenang</li>
+                <li>Gunakan kombinasi huruf, angka, dan simbol untuk password kuat</li>
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -82,25 +122,96 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwl6tl5pNVLOQoWG_xYSHrV4YPIy2KneMarKApGIFiUY5ZMEb6GWK6tX_99aArvFPD1/exec";
     let isLoggedIn = false, menus = [], faqs = [];
 
-    function login() { 
+    function showAlert(message, type) {
+        const alertDiv = document.getElementById("alertMessage");
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.innerHTML = message;
+        alertDiv.style.display = "block";
+        setTimeout(() => {
+            alertDiv.style.display = "none";
+        }, 3000);
+    }
+
+    async function login() { 
         const password = document.getElementById("password").value;
-        if (password === "admin123") { 
-            isLoggedIn = true;
-            document.getElementById("loginPanel").style.display = "none";
-            document.getElementById("adminPanel").style.display = "block";
-            document.getElementById("logoutBtn").style.display = "inline-block";
-            document.getElementById("adminStatus").innerHTML = "👤 Admin";
-            loadData();
-        } else alert("Password salah!");
+        if (!password) {
+            showAlert("Masukkan password!", "error");
+            return;
+        }
+        
+        try {
+            const resp = await fetch(`${API_URL}?action=verifyPassword&password=${encodeURIComponent(password)}`);
+            const json = await resp.json();
+            
+            if (json.success) { 
+                isLoggedIn = true;
+                sessionStorage.setItem("adminLoggedIn", "true");
+                document.getElementById("loginPanel").style.display = "none";
+                document.getElementById("adminPanel").style.display = "block";
+                document.getElementById("logoutBtn").style.display = "inline-block";
+                document.getElementById("adminStatus").innerHTML = "👤 Admin";
+                loadData();
+                showAlert("Login berhasil!", "success");
+            } else {
+                showAlert("Password salah!", "error");
+            }
+        } catch (error) {
+            showAlert("Error: " + error.message, "error");
+        }
     }
     
     function logout() { 
         isLoggedIn = false;
+        sessionStorage.removeItem("adminLoggedIn");
         document.getElementById("loginPanel").style.display = "block";
         document.getElementById("adminPanel").style.display = "none";
         document.getElementById("logoutBtn").style.display = "none";
         document.getElementById("adminStatus").innerHTML = "";
         document.getElementById("password").value = "";
+        showAlert("Anda telah logout", "success");
+    }
+    
+    async function changePassword() {
+        const currentPassword = document.getElementById("currentPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        
+        if (!currentPassword || !newPassword) {
+            showAlert("Semua field harus diisi!", "error");
+            return;
+        }
+        
+        if (newPassword.length < 4) {
+            showAlert("Password baru minimal 4 karakter!", "error");
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            showAlert("Konfirmasi password baru tidak cocok!", "error");
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append("action", "changePassword");
+        formData.append("password", currentPassword);
+        formData.append("currentPassword", currentPassword);
+        formData.append("newPassword", newPassword);
+        
+        try {
+            const resp = await fetch(API_URL, { method: "POST", body: formData });
+            const json = await resp.json();
+            
+            if (json.success) {
+                showAlert("Password berhasil diubah!", "success");
+                document.getElementById("currentPassword").value = "";
+                document.getElementById("newPassword").value = "";
+                document.getElementById("confirmPassword").value = "";
+            } else {
+                showAlert("Gagal: " + json.message, "error");
+            }
+        } catch (error) {
+            showAlert("Error: " + error.message, "error");
+        }
     }
     
     async function loadData() { 
@@ -109,22 +220,30 @@
     }
     
     async function loadMenus() { 
-        const resp = await fetch(`${API_URL}?action=getAllMenus`); 
-        const json = await resp.json(); 
-        if (json.success) { 
-            menus = json.data; 
-            renderMenuList(); 
-            renderMenuSelect(); 
-        } 
+        try {
+            const resp = await fetch(`${API_URL}?action=getAllMenus`); 
+            const json = await resp.json(); 
+            if (json.success) { 
+                menus = json.data; 
+                renderMenuList(); 
+                renderMenuSelect(); 
+            }
+        } catch (error) {
+            showAlert("Gagal load menu: " + error.message, "error");
+        }
     }
     
     async function loadFaqs() { 
-        const resp = await fetch(`${API_URL}?action=getAllFaqs`); 
-        const json = await resp.json(); 
-        if (json.success) { 
-            faqs = json.data; 
-            renderFaqList(); 
-        } 
+        try {
+            const resp = await fetch(`${API_URL}?action=getAllFaqs`); 
+            const json = await resp.json(); 
+            if (json.success) { 
+                faqs = json.data; 
+                renderFaqList(); 
+            }
+        } catch (error) {
+            showAlert("Gagal load FAQ: " + error.message, "error");
+        }
     }
     
     function renderMenuList() {
@@ -170,21 +289,25 @@
     async function addMenu() {
         const parent_id = document.getElementById("menuParentId").value;
         const nama = document.getElementById("menuNama").value;
-        if (!nama) { alert("Nama menu harus diisi!"); return; }
+        if (!nama) { showAlert("Nama menu harus diisi!", "error"); return; }
         
         const formData = new FormData();
         formData.append("action", "addMenu");
-        formData.append("password", "admin123");
+        formData.append("password", document.getElementById("password").value);
         formData.append("parent_id", parent_id);
         formData.append("nama", nama);
         
-        const resp = await fetch(API_URL, { method: "POST", body: formData });
-        const json = await resp.json();
-        if (json.success) { 
-            alert("Menu berhasil ditambahkan!"); 
-            document.getElementById("menuNama").value = ""; 
-            loadMenus(); 
-        } else alert("Gagal: " + json.message);
+        try {
+            const resp = await fetch(API_URL, { method: "POST", body: formData });
+            const json = await resp.json();
+            if (json.success) { 
+                showAlert("Menu berhasil ditambahkan!", "success");
+                document.getElementById("menuNama").value = ""; 
+                loadMenus(); 
+            } else showAlert("Gagal: " + json.message, "error");
+        } catch (error) {
+            showAlert("Error: " + error.message, "error");
+        }
     }
     
     function editMenu(id) {
@@ -196,25 +319,33 @@
     async function updateMenu(id, nama) {
         const formData = new FormData();
         formData.append("action", "updateMenu");
-        formData.append("password", "admin123");
+        formData.append("password", document.getElementById("password").value);
         formData.append("id", id);
         formData.append("nama", nama);
         
-        const resp = await fetch(API_URL, { method: "POST", body: formData });
-        const json = await resp.json();
-        if (json.success) { alert("Menu berhasil diupdate!"); loadMenus(); }
+        try {
+            const resp = await fetch(API_URL, { method: "POST", body: formData });
+            const json = await resp.json();
+            if (json.success) { showAlert("Menu berhasil diupdate!", "success"); loadMenus(); }
+        } catch (error) {
+            showAlert("Error: " + error.message, "error");
+        }
     }
     
     async function deleteMenu(id) {
         if (confirm("Yakin hapus menu ini?")) {
             const formData = new FormData();
             formData.append("action", "deleteMenu");
-            formData.append("password", "admin123");
+            formData.append("password", document.getElementById("password").value);
             formData.append("id", id);
             
-            const resp = await fetch(API_URL, { method: "POST", body: formData });
-            const json = await resp.json();
-            if (json.success) { alert("Menu berhasil dihapus!"); loadMenus(); }
+            try {
+                const resp = await fetch(API_URL, { method: "POST", body: formData });
+                const json = await resp.json();
+                if (json.success) { showAlert("Menu berhasil dihapus!", "success"); loadMenus(); }
+            } catch (error) {
+                showAlert("Error: " + error.message, "error");
+            }
         }
     }
     
@@ -222,36 +353,35 @@
         const menu_id = document.getElementById("faqMenuId").value;
         const pertanyaan = document.getElementById("faqPertanyaan").value;
         
-        if (!pertanyaan) { alert("Pertanyaan harus diisi!"); return; }
+        if (!pertanyaan) { showAlert("Pertanyaan harus diisi!", "error"); return; }
         
         const formData = new FormData();
         formData.append("action", "addFaq");
-        formData.append("password", "admin123");
+        formData.append("password", document.getElementById("password").value);
         formData.append("menu_id", menu_id);
         formData.append("pertanyaan", pertanyaan);
         
-        // Ambil semua jawaban 1-6
         for (let i = 1; i <= 6; i++) {
             let jawaban = document.getElementById(`jawaban${i}`).value;
-            if (jawaban && jawaban.trim() !== "") {
-                formData.append(`jawaban${i}`, jawaban.trim());
-            } else {
-                formData.append(`jawaban${i}`, "");
-            }
+            formData.append(`jawaban${i}`, jawaban && jawaban.trim() ? jawaban.trim() : "");
         }
         
-        const resp = await fetch(API_URL, { method: "POST", body: formData });
-        const json = await resp.json();
-        
-        if (json.success) {
-            alert("FAQ berhasil ditambahkan!");
-            document.getElementById("faqPertanyaan").value = "";
-            for (let i = 1; i <= 6; i++) {
-                document.getElementById(`jawaban${i}`).value = "";
+        try {
+            const resp = await fetch(API_URL, { method: "POST", body: formData });
+            const json = await resp.json();
+            
+            if (json.success) {
+                showAlert("FAQ berhasil ditambahkan!", "success");
+                document.getElementById("faqPertanyaan").value = "";
+                for (let i = 1; i <= 6; i++) {
+                    document.getElementById(`jawaban${i}`).value = "";
+                }
+                loadFaqs();
+            } else {
+                showAlert("Gagal: " + json.message, "error");
             }
-            loadFaqs();
-        } else {
-            alert("Gagal: " + json.message);
+        } catch (error) {
+            showAlert("Error: " + error.message, "error");
         }
     }
     
@@ -269,7 +399,7 @@
                     <button class="btn-warning" onclick="editFaq('${faq.id}')">✏️ Edit</button>
                     <button class="btn-danger" onclick="deleteFaq('${faq.id}')">🗑️ Hapus</button>
                 </td>
-            </tr>`;
+             </tr>`;
         }
         
         html += '</tbody></table>';
@@ -279,11 +409,6 @@
     function editFaq(id) {
         const faq = faqs.find(f => f.id === id);
         if (!faq) return;
-        
-        let jawabanText = "";
-        if (faq.jawaban_list && faq.jawaban_list.length) {
-            jawabanText = faq.jawaban_list.map((j, i) => `${i+1}. ${j}`).join("\n");
-        }
         
         const newPertanyaan = prompt("Edit pertanyaan:", faq.pertanyaan);
         if (!newPertanyaan) return;
@@ -300,7 +425,7 @@
     async function updateFaq(id, pertanyaan, jawabanArray) {
         const formData = new FormData();
         formData.append("action", "updateFaq");
-        formData.append("password", "admin123");
+        formData.append("password", document.getElementById("password").value);
         formData.append("id", id);
         formData.append("pertanyaan", pertanyaan);
         
@@ -308,13 +433,17 @@
             formData.append(`jawaban${i+1}`, jawabanArray[i] || "");
         }
         
-        const resp = await fetch(API_URL, { method: "POST", body: formData });
-        const json = await resp.json();
-        if (json.success) { 
-            alert("FAQ berhasil diupdate!"); 
-            loadFaqs(); 
-        } else {
-            alert("Gagal update: " + json.message);
+        try {
+            const resp = await fetch(API_URL, { method: "POST", body: formData });
+            const json = await resp.json();
+            if (json.success) { 
+                showAlert("FAQ berhasil diupdate!", "success"); 
+                loadFaqs(); 
+            } else {
+                showAlert("Gagal update: " + json.message, "error");
+            }
+        } catch (error) {
+            showAlert("Error: " + error.message, "error");
         }
     }
     
@@ -322,14 +451,18 @@
         if (confirm("Yakin hapus FAQ ini?")) {
             const formData = new FormData();
             formData.append("action", "deleteFaq");
-            formData.append("password", "admin123");
+            formData.append("password", document.getElementById("password").value);
             formData.append("id", id);
             
-            const resp = await fetch(API_URL, { method: "POST", body: formData });
-            const json = await resp.json();
-            if (json.success) { 
-                alert("FAQ berhasil dihapus!"); 
-                loadFaqs(); 
+            try {
+                const resp = await fetch(API_URL, { method: "POST", body: formData });
+                const json = await resp.json();
+                if (json.success) { 
+                    showAlert("FAQ berhasil dihapus!", "success"); 
+                    loadFaqs(); 
+                }
+            } catch (error) {
+                showAlert("Error: " + error.message, "error");
             }
         }
     }
@@ -337,15 +470,25 @@
     function showTab(tab) {
         document.getElementById("menuPanel").classList.remove("active");
         document.getElementById("faqPanel").classList.remove("active");
+        document.getElementById("securityPanel").classList.remove("active");
         document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
         
         if (tab === "menu") { 
             document.getElementById("menuPanel").classList.add("active"); 
             document.querySelectorAll(".tab-btn")[0].classList.add("active"); 
-        } else { 
+        } else if (tab === "faq") { 
             document.getElementById("faqPanel").classList.add("active"); 
             document.querySelectorAll(".tab-btn")[1].classList.add("active"); 
+        } else { 
+            document.getElementById("securityPanel").classList.add("active"); 
+            document.querySelectorAll(".tab-btn")[2].classList.add("active"); 
         }
+    }
+    
+    // Cek session login saat load
+    if (sessionStorage.getItem("adminLoggedIn") === "true") {
+        document.getElementById("password").value = "admin123"; // isi dengan password terakhir
+        login();
     }
 </script>
 </body>
