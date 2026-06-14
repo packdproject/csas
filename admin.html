@@ -3,24 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - HelpDesk</title>
+    <title>Admin Panel - Minipack</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; }
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-        .header { background: #3390ec; color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .login-box { background: white; max-width: 400px; margin: 100px auto; padding: 30px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; }
-        .login-box button { width: 100%; padding: 12px; background: #3390ec; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; }
+        .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .login-box { background: white; max-width: 400px; margin: 100px auto; padding: 30px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: center; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e0e0e0; border-radius: 12px; transition: all 0.3s ease; }
+        .login-box input:focus { outline: none; border-color: #667eea; }
+        .login-box button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: 600; transition: transform 0.2s; }
+        .login-box button:hover { transform: translateY(-2px); }
         .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn { padding: 12px 24px; background: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
-        .tab-btn.active { background: #3390ec; color: white; }
-        .panel { display: none; background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .tab-btn { padding: 12px 24px; background: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .panel { display: none; background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .panel.active { display: block; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-        .btn-primary { background: #3390ec; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 10px; transition: all 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #667eea; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: transform 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); }
         .btn-danger { background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; }
         .btn-warning { background: #ffc107; color: #000; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
@@ -51,14 +55,18 @@
         .alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; position: fixed; top: 20px; right: 20px; z-index: 1100; min-width: 250px; }
         .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info-badge { background: #e3f2fd; padding: 8px 12px; border-radius: 10px; font-size: 12px; color: #1976d2; margin-top: 10px; display: inline-block; }
         @media (max-width: 768px) { table, thead, tbody, th, td, tr { display: block; } th { display: none; } td { display: block; padding: 8px; } }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>📋 Admin Panel HelpDesk</h1>
-        <button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none;">Logout</button>
+        <h1>📋 Admin Panel - Minipack</h1>
+        <div style="display: flex; gap: 10px;">
+            <a href="#" onclick="openChangePassword()" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 8px; color: white; text-decoration: none;">🔐 Ganti Password</a>
+            <button class="btn-primary" onclick="logout()" id="logoutBtn" style="display:none;">Logout</button>
+        </div>
     </div>
     
     <div id="alertMessage" class="alert"></div>
@@ -66,8 +74,9 @@
     <!-- Login Panel -->
     <div id="loginPanel" class="login-box">
         <h2>🔐 Login Admin</h2>
-        <input type="password" id="password" placeholder="Masukkan password" onkeypress="if(event.key==='Enter') login()">
+        <input type="password" id="password" placeholder="Masukkan password admin" onkeypress="if(event.key==='Enter') login()">
         <button onclick="login()">Login</button>
+        <div class="info-badge">💡 Hubungi developer untuk mengubah password</div>
     </div>
     
     <!-- Admin Panel -->
@@ -186,6 +195,11 @@
         showAlert("Logout berhasil", "success");
     }
     
+    function openChangePassword() {
+        // Buka halaman ganti password yang terpisah
+        window.open(`${API_URL}?action=changePasswordPage`, '_blank', 'width=500,height=600');
+    }
+    
     function getPassword() { return sessionStorage.getItem("adminPassword"); }
     
     async function loadData() { await loadMenus(); await loadFaqs(); }
@@ -211,14 +225,15 @@
             let html = '';
             for (const menu of menus.filter(m => m.parent_id === parentId)) {
                 html += `<tr><td style="padding-left:${level*20}px">${'—'.repeat(level)} ${escapeHtml(menu.nama)}</td>
-                        <td>${menu.parent_id === '0' ? 'Root' : getMenuName(menu.parent_id)}</td>
-                        <td><button class="btn-warning" onclick="openEditMenu('${menu.id}')">✏️</button>
-                        <button class="btn-danger" onclick="deleteMenu('${menu.id}')">🗑️</button></td></tr>`;
+                         <td>${menu.parent_id === '0' ? 'Root' : getMenuName(menu.parent_id)}</td>
+                         <td><button class="btn-warning" onclick="openEditMenu('${menu.id}')">✏️</button>
+                        <button class="btn-danger" onclick="deleteMenu('${menu.id}')">🗑️</button></td>
+                        </tr>`;
                 html += buildTree(menu.id, level + 1);
             }
             return html;
         };
-        document.getElementById("menuList").innerHTML = `<td><thead><tr><th>Nama Menu</th><th>Parent</th><th>Aksi</th></tr></thead><tbody>${buildTree("0")}</tbody></table>`;
+        document.getElementById("menuList").innerHTML = `<table><thead><tr><th>Nama Menu</th><th>Parent</th><th>Aksi</th></tr></thead><tbody>${buildTree("0")}</tbody></table>`;
     }
     
     function renderMenuSelect() {
@@ -347,9 +362,13 @@
         let html = '<table><thead><tr><th>Pertanyaan</th><th>Menu</th><th>Jawaban</th><th>Aksi</th></tr></thead><tbody>';
         for (const faq of faqs) {
             const jawabanHtml = (faq.jawaban_list || []).map(j => `<span class="jawaban-badge">${j.substring(0, 30)}${j.length > 30 ? '...' : ''}</span>`).join('');
-            html += `<tr><td>${escapeHtml(faq.pertanyaan)}</td><td>${getMenuName(faq.menu_id)}</td><td><div class="jawaban-list">${jawabanHtml || '-'}</div></td>
-                    <td><button class="btn-warning" onclick="openEditFaq('${faq.id}')">✏️</button>
-                    <button class="btn-danger" onclick="deleteFaq('${faq.id}')">🗑️</button></td></tr>`;
+            html += `<tr>
+                        <td>${escapeHtml(faq.pertanyaan)}</td>
+                        <td>${getMenuName(faq.menu_id)}</td>
+                        <td><div class="jawaban-list">${jawabanHtml || '-'}</div></td>
+                        <td><button class="btn-warning" onclick="openEditFaq('${faq.id}')">✏️</button>
+                        <button class="btn-danger" onclick="deleteFaq('${faq.id}')">🗑️</button></td>
+                     </tr>`;
         }
         html += '</tbody></table>';
         document.getElementById("faqList").innerHTML = html || '<p>Tidak ada data</p>';
@@ -383,50 +402,4 @@
         
         if (!pertanyaan) { showAlert("Pertanyaan harus diisi!", "error"); return; }
         
-        const jawabanArray = jawabanText ? jawabanText.split("|").map(j => j.trim()) : [];
-        
-        const formData = new FormData();
-        formData.append("action", "updateFaq");
-        formData.append("password", getPassword());
-        formData.append("id", id);
-        formData.append("menu_id", menu_id);
-        formData.append("pertanyaan", pertanyaan);
-        for (let i = 0; i < 6; i++) formData.append(`jawaban${i+1}`, jawabanArray[i] || "");
-        
-        try {
-            const resp = await fetch(API_URL, { method: "POST", body: formData });
-            const json = await resp.json();
-            if (json.success) { showAlert("FAQ diupdate!", "success"); closeModal("editFaqModal"); loadFaqs(); }
-            else if (json.message === "Password salah") logout();
-            else showAlert("Gagal: " + json.message, "error");
-        } catch (error) { showAlert("Error: " + error.message, "error"); }
-    }
-    
-    async function deleteFaq(id) {
-        if (!confirm("Yakin hapus FAQ ini?")) return;
-        const formData = new FormData();
-        formData.append("action", "deleteFaq");
-        formData.append("password", getPassword());
-        formData.append("id", id);
-        
-        try {
-            const resp = await fetch(API_URL, { method: "POST", body: formData });
-            const json = await resp.json();
-            if (json.success) { showAlert("FAQ dihapus!", "success"); loadFaqs(); }
-            else if (json.message === "Password salah") logout();
-        } catch (error) { showAlert("Error: " + error.message, "error"); }
-    }
-    
-    function showTab(tab) {
-        document.getElementById("menuPanel").classList.remove("active");
-        document.getElementById("faqPanel").classList.remove("active");
-        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-        if (tab === "menu") { document.getElementById("menuPanel").classList.add("active"); document.querySelectorAll(".tab-btn")[0].classList.add("active"); }
-        else { document.getElementById("faqPanel").classList.add("active"); document.querySelectorAll(".tab-btn")[1].classList.add("active"); }
-    }
-    
-    function closeModal(id) { document.getElementById(id).style.display = "none"; }
-    window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = "none"; }
-</script>
-</body>
-</html>
+        const jawabanArray = jawabanText ? jawabanText.split("|").map(j => j.trim()) :
