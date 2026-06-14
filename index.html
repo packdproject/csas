@@ -3,40 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>HelpDesk Seller · Multi Jawaban</title>
+    <title>HelpDesk Seller</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: all 0.2s ease;
         }
 
         :root {
             --bg: #ffffff;
             --surface: #f0f2f5;
-            --header: #ffffff;
             --primary: #3390ec;
-            --primary-dark: #2a7bcb;
             --text: #000000;
             --text-secondary: #5e6672;
             --border: #e7e9ec;
             --card: #ffffff;
             --hover: #f4f4f5;
-            --answer-bg: #f9f9fb;
         }
 
         body.dark {
             --bg: #0f0f12;
             --surface: #1c1c1e;
-            --header: #1c1c1e;
             --primary: #53a9ff;
             --text: #ffffff;
             --text-secondary: #aaaab3;
             --border: #2c2c30;
             --card: #252528;
             --hover: #2c2c30;
-            --answer-bg: #1e1e22;
         }
 
         body {
@@ -53,7 +47,6 @@
             width: 100%;
         }
 
-        /* SIDEBAR */
         .sidebar {
             width: 300px;
             background: var(--surface);
@@ -148,15 +141,12 @@
 
         .children-list {
             padding-left: 28px;
-            overflow: hidden;
-            transition: max-height 0.2s ease;
         }
 
         .children-list.collapsed {
             display: none;
         }
 
-        /* MAIN CONTENT */
         .main {
             flex: 1;
             display: flex;
@@ -166,7 +156,7 @@
 
         .main-header {
             padding: 16px 24px;
-            background: var(--header);
+            background: var(--card);
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -278,7 +268,7 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.25s ease-out;
-            background: var(--answer-bg);
+            background: var(--surface);
             border-top: 1px solid transparent;
         }
 
@@ -324,9 +314,6 @@
             .overlay.open {
                 display: block;
             }
-            .faq-container, .search-section {
-                padding: 12px 16px;
-            }
         }
     </style>
 </head>
@@ -338,7 +325,7 @@
                 <div class="logo-icon">📘</div>
                 <div class="logo-text">HelpDesk Seller</div>
             </div>
-            <button class="reload-btn" id="reloadBtn">⟳ Muat Ulang Data</button>
+            <button class="reload-btn" id="reloadBtn">⟳ Muat Ulang</button>
         </div>
         <div class="nav-tree" id="menuTree"></div>
     </div>
@@ -347,8 +334,8 @@
             <div style="display: flex; align-items: center; gap: 10px;">
                 <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
                 <div class="title-area">
-                    <h2 id="pageTitle">Semua FAQ</h2>
-                    <p id="pageSub">Pilih menu dari samping</p>
+                    <h2 id="pageTitle">HelpDesk Seller</h2>
+                    <p id="pageSub">Pusat Bantuan Multi Seller</p>
                 </div>
             </div>
             <button class="theme-toggle" id="themeToggle">🌓 Mode</button>
@@ -360,14 +347,15 @@
             </div>
         </div>
         <div class="faq-container" id="faqContainer">
-            <div class="empty-state">✨ Pilih kategori dari menu</div>
+            <div class="empty-state">✨ Pilih kategori dari menu samping</div>
         </div>
     </div>
     <div class="overlay" id="overlay"></div>
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbwKJUJieEWG91Bu_FQsgJxV4FSvUTJCFbbByfuTh0FQk12eR2WqZH4wLLiqYsXWMPL/exec";
+    // 🔴 GANTI DENGAN URL APPS SCRIPT ANDA 🔴
+    const API = "https://script.google.com/macros/s/AKfycbzluMD77v-V1F1Z7hfh1Ci584gFv9FStTglKajKG-7y2VyT853jUUah5NS5LcREPbGU/exec";
     
     let menuTree = [];
     let allFaqs = [];
@@ -377,8 +365,13 @@
     async function fetchAPI(action, params = {}) {
         const url = new URL(API);
         url.searchParams.append("action", action);
-        Object.keys(params).forEach(k => params[k] && url.searchParams.append(k, params[k]));
-        const resp = await fetch(url);
+        Object.keys(params).forEach(k => {
+            if (params[k] !== undefined && params[k] !== "") {
+                url.searchParams.append(k, params[k]);
+            }
+        });
+        
+        const resp = await fetch(url.toString());
         const json = await resp.json();
         if (!json.success) throw new Error(json.message || "Gagal");
         return json.data;
@@ -397,29 +390,38 @@
 
     function renderMenuTree(tree) {
         const container = document.getElementById("menuTree");
+        
         const build = (nodes, level = 0) => {
-            let html = '';
+            let html = '<ul style="list-style:none; padding-left: 0;">';
             for (const node of nodes) {
                 const hasChildren = node.children && node.children.length > 0;
                 const isActive = currentMenuId === node.id;
+                
                 html += `<li class="tree-item">
                     <div class="tree-node ${isActive ? 'active' : ''}" data-id="${node.id}" data-name="${escapeHtml(node.nama)}">
                         <div class="tree-node-content">
                             <span>${level === 0 ? '📁' : '📄'}</span>
-                            <span>${escapeHtml(node.nama)}</span>
-                        </div>
-                        ${hasChildren ? `<span class="collapse-icon" data-id="${node.id}">▼</span>` : ''}
-                    </div>`;
+                            <span>${escapeHtml(node.nama) || '(tanpa nama)'}</span>
+                        </div>`;
+                
                 if (hasChildren) {
-                    html += `<ul class="children-list" id="children-${node.id}">${build(node.children, level + 1)}</ul>`;
+                    html += `<span class="collapse-icon" data-id="${node.id}">▼</span>`;
                 }
+                
+                html += `</div>`;
+                
+                if (hasChildren) {
+                    html += `<div class="children-list" id="children-${node.id}">${build(node.children, level + 1)}</div>`;
+                }
+                
                 html += `</li>`;
             }
+            html += `</ul>`;
             return html;
         };
-        container.innerHTML = `<ul style="list-style:none; padding:0;">${build(tree)}</ul>`;
         
-        // Event click menu
+        container.innerHTML = build(tree);
+        
         document.querySelectorAll('.tree-node').forEach(el => {
             const id = el.getAttribute('data-id');
             const name = el.getAttribute('data-name');
@@ -430,12 +432,10 @@
             });
         });
         
-        // Event collapse/expand
         document.querySelectorAll('.collapse-icon').forEach(icon => {
             icon.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const parentNode = icon.closest('.tree-node');
-                const id = parentNode.getAttribute('data-id');
+                const id = icon.closest('.tree-node').getAttribute('data-id');
                 const childList = document.getElementById(`children-${id}`);
                 if (childList) {
                     childList.classList.toggle('collapsed');
@@ -448,29 +448,31 @@
     function setActiveMenu(id, name) {
         currentMenuId = id;
         currentMenuName = name;
-        document.getElementById("pageTitle").innerText = name;
-        document.getElementById("pageSub").innerText = id === "0" ? "Semua pertanyaan dari semua kategori" : `Menampilkan FAQ untuk ${name}`;
+        document.getElementById("pageTitle").innerText = name || "Semua FAQ";
+        document.getElementById("pageSub").innerText = id === "0" ? "Semua pertanyaan" : `FAQ untuk ${name || 'kategori ini'}`;
+        
         document.querySelectorAll('.tree-node').forEach(n => n.classList.remove('active'));
-        document.querySelector(`.tree-node[data-id="${id}"]`)?.classList.add('active');
+        const activeNode = document.querySelector(`.tree-node[data-id="${id}"]`);
+        if (activeNode) activeNode.classList.add('active');
+        
         document.getElementById("searchInput").value = "";
         renderFaqs();
     }
 
     function renderFaqs() {
+        const container = document.getElementById("faqContainer");
         let filtered = [...allFaqs];
+        
         const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
         if (keyword) {
             filtered = allFaqs.filter(f => 
-                f.pertanyaan.toLowerCase().includes(keyword) || 
-                f.jawaban.toLowerCase().includes(keyword)
+                (f.pertanyaan || "").toLowerCase().includes(keyword) || 
+                (f.jawaban || "").toLowerCase().includes(keyword)
             );
-            document.getElementById("pageTitle").innerText = `Hasil: "${keyword}"`;
-            document.getElementById("pageSub").innerText = `${filtered.length} FAQ ditemukan`;
         } else if (currentMenuId !== "0") {
             filtered = allFaqs.filter(f => String(f.menu_id) === String(currentMenuId));
         }
         
-        const container = document.getElementById("faqContainer");
         if (!filtered.length) {
             container.innerHTML = `<div class="empty-state">📭 Tidak ada FAQ untuk kategori ini</div>`;
             return;
@@ -478,15 +480,20 @@
         
         let html = '';
         filtered.forEach((faq, idx) => {
-            const answerId = `ans-${idx}-${faq.id}`;
-            const jawabanHtml = faq.jawaban_list && faq.jawaban_list.length 
-                ? `<div class="answer-content">${faq.jawaban_list.map((j, i) => `${i+1}. ${escapeHtml(j)}`).join('<br>')}</div>`
-                : `<div class="answer-content">${escapeHtml(faq.jawaban)}</div>`;
+            const answerId = `ans-${idx}`;
+            let jawabanHtml = '';
+            
+            if (faq.jawaban_list && faq.jawaban_list.length) {
+                jawabanHtml = `<div class="answer-content">${faq.jawaban_list.map((j, i) => `${i+1}. ${escapeHtml(j)}`).join('<br><br>')}</div>`;
+            } else {
+                jawabanHtml = `<div class="answer-content">${escapeHtml(faq.jawaban || "Jawaban belum tersedia")}</div>`;
+            }
+            
             html += `
                 <div class="faq-card">
                     <div class="faq-question" data-target="${answerId}">
-                        <span>${escapeHtml(faq.pertanyaan)}</span>
-                        <span class="copy-btn" data-copy="${faq.id}">📋 Salin</span>
+                        <span>❓ ${escapeHtml(faq.pertanyaan || "Pertanyaan tidak tersedia")}</span>
+                        <span class="copy-btn" data-copy='${JSON.stringify(faq.jawaban_list || [faq.jawaban])}'>📋 Salin</span>
                     </div>
                     <div class="faq-answer" id="${answerId}">
                         ${jawabanHtml}
@@ -494,47 +501,53 @@
                 </div>
             `;
         });
+        
         container.innerHTML = html;
         
-        // Toggle answer
         document.querySelectorAll('.faq-question').forEach(q => {
             const targetId = q.getAttribute('data-target');
             const answerDiv = document.getElementById(targetId);
+            
             q.addEventListener('click', (e) => {
                 if (e.target.classList.contains('copy-btn')) return;
                 answerDiv.classList.toggle('open');
             });
+            
             const copyBtn = q.querySelector('.copy-btn');
             if (copyBtn) {
                 copyBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const faqId = copyBtn.getAttribute('data-copy');
-                    const faq = allFaqs.find(f => String(f.id) === faqId);
-                    if (faq && faq.jawaban_list && faq.jawaban_list.length) {
-                        const text = faq.jawaban_list.map((j, i) => `${i+1}. ${j}`).join('\n');
-                        navigator.clipboard.writeText(text);
-                    } else if (faq) {
-                        navigator.clipboard.writeText(faq.jawaban);
-                    }
-                    const old = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '✅ Tersalin';
-                    setTimeout(() => copyBtn.innerHTML = old, 1200);
+                    const data = copyBtn.getAttribute('data-copy');
+                    let textToCopy = '';
+                    try {
+                        const parsed = JSON.parse(data);
+                        textToCopy = Array.isArray(parsed) ? parsed.map((j, i) => `${i+1}. ${j}`).join('\n') : parsed;
+                    } catch { textToCopy = data; }
+                    
+                    navigator.clipboard.writeText(textToCopy);
+                    const original = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '✅ Tersalin!';
+                    setTimeout(() => copyBtn.innerHTML = original, 1500);
                 });
             }
         });
     }
 
     function searchFaq() {
-        if (document.getElementById("searchInput").value.trim()) {
+        const keyword = document.getElementById("searchInput").value.trim();
+        if (keyword) {
             currentMenuId = "0";
             document.querySelectorAll('.tree-node').forEach(n => n.classList.remove('active'));
+            renderFaqs();
         } else {
             setActiveMenu(currentMenuId, currentMenuName);
         }
-        renderFaqs();
     }
 
-    function escapeHtml(str) { return str?.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]) || ''; }
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+    }
 
     // Theme
     const themeToggle = document.getElementById("themeToggle");
