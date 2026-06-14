@@ -1,729 +1,730 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-  <title>CS Dashboard · FAQ Seller</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Pusat Bantuan · Seller Support</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
 
-    /* Global Variables (Light Default) */
-    :root {
-      --bg-body: #f5f7fb;
-      --bg-surface: #ffffff;
-      --bg-sidebar: #ffffff;
-      --bg-card: #ffffff;
-      --border-light: #eef2f6;
-      --text-primary: #1f2a3e;
-      --text-secondary: #546574;
-      --text-muted: #8e9eae;
-      --accent: #2b8c6e;
-      --accent-soft: #e0f2e9;
-      --accent-hover: #227a5e;
-      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.05);
-      --header-height: 64px;
-      --sidebar-width: 280px;
-    }
+        /* Tema Terang (default) */
+        :root {
+            --bg-page: #f5f7fb;
+            --bg-surface: #ffffff;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1f2a3e;
+            --text-secondary: #5b6e8c;
+            --text-muted: #7f8fa4;
+            --border-light: #e9eef3;
+            --accent: #2d7aff;
+            --accent-hover: #1a66e6;
+            --accent-soft: #eef3fe;
+            --shadow: 0 8px 20px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --code-bg: #f8f9fc;
+            --icon-fill: #5e7a9f;
+        }
 
-    body.dark {
-      --bg-body: #0f1217;
-      --bg-surface: #1e242c;
-      --bg-sidebar: #171c23;
-      --bg-card: #1e242c;
-      --border-light: #2a313a;
-      --text-primary: #eef2ff;
-      --text-secondary: #b9c3cf;
-      --text-muted: #7e8a98;
-      --accent: #3aa37f;
-      --accent-soft: #1e3a32;
-      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
+        /* Tema Gelap */
+        body.dark {
+            --bg-page: #0f1217;
+            --bg-surface: #1e232e;
+            --bg-sidebar: #171c26;
+            --bg-card: #1e232e;
+            --text-primary: #edf2f7;
+            --text-secondary: #a0b3d9;
+            --text-muted: #7e8aa8;
+            --border-light: #2a2f3c;
+            --accent: #3b82f6;
+            --accent-hover: #6090f0;
+            --accent-soft: #1e293b;
+            --shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+            --code-bg: #0f1119;
+            --icon-fill: #8a9bd6;
+        }
 
-    body {
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-      background: var(--bg-body);
-      color: var(--text-primary);
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      overflow: hidden;
-    }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    /* Layout Utama */
-    .app {
-      display: flex;
-      height: 100vh;
-      width: 100%;
-      overflow: hidden;
-    }
+        /* Layout utama */
+        .app {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
 
-    /* SIDEBAR - seperti Telegram desktop */
-    .sidebar {
-      width: var(--sidebar-width);
-      background: var(--bg-sidebar);
-      border-right: 1px solid var(--border-light);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      overflow-y: auto;
-      z-index: 10;
-      box-shadow: var(--shadow-sm);
-    }
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+            backdrop-filter: blur(2px);
+        }
 
-    .sidebar-header {
-      padding: 20px 20px 12px 24px;
-      border-bottom: 1px solid var(--border-light);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
+        .sidebar-header {
+            padding: 24px 20px 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .logo-icon {
-      width: 32px;
-      height: 32px;
-      background: var(--accent);
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      color: white;
-      font-size: 18px;
-    }
+        .logo-icon {
+            width: 34px;
+            height: 34px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: white;
+        }
 
-    .logo-text {
-      font-weight: 700;
-      font-size: 1.25rem;
-      letter-spacing: -0.3px;
-    }
+        .logo-text h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
 
-    .theme-toggle {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-light);
-      border-radius: 40px;
-      padding: 6px 10px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--text-secondary);
-    }
+        .logo-text p {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
 
-    .seller-list {
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+        .theme-toggle {
+            background: var(--accent-soft);
+            border: none;
+            border-radius: 40px;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+        }
 
-    .seller-item {
-      background: transparent;
-      border-radius: 14px;
-      padding: 12px 16px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--text-primary);
-    }
+        .seller-list {
+            padding: 16px 12px;
+            flex: 1;
+        }
 
-    .seller-item.active {
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 600;
-    }
+        .seller-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.1s linear;
+            color: var(--text-secondary);
+        }
 
-    .seller-item:hover:not(.active) {
-      background: var(--border-light);
-    }
+        .seller-item.active {
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-weight: 600;
+        }
 
-    .menu-tree {
-      flex: 1;
-      overflow-y: auto;
-      padding: 8px 12px 20px 12px;
-    }
+        .seller-item:hover:not(.active) {
+            background: var(--border-light);
+        }
 
-    .menu-node {
-      list-style: none;
-      margin-left: 0;
-      padding-left: 0;
-    }
+        .seller-badge {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
 
-    .menu-node li {
-      list-style: none;
-      margin: 4px 0;
-    }
+        .reload-btn {
+            margin: 12px;
+            padding: 10px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+        }
 
-    .menu-item {
-      display: flex;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      transition: all 0.15s;
-      gap: 10px;
-    }
+        /* MAIN CONTENT */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-    .menu-item:hover {
-      background: var(--border-light);
-      color: var(--text-primary);
-    }
+        .top-bar {
+            padding: 18px 28px;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
 
-    .menu-item.active {
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 500;
-    }
+        .page-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
 
-    .menu-children {
-      margin-left: 28px;
-      padding-left: 8px;
-      border-left: 1px dashed var(--border-light);
-    }
+        .search-wrapper {
+            display: flex;
+            gap: 10px;
+            background: var(--bg-page);
+            border-radius: 60px;
+            padding: 6px 6px 6px 18px;
+            border: 1px solid var(--border-light);
+        }
 
-    /* MAIN PANEL */
-    .main-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: var(--bg-body);
-    }
+        .search-wrapper input {
+            background: transparent;
+            border: none;
+            padding: 8px 0;
+            width: 240px;
+            outline: none;
+            color: var(--text-primary);
+        }
 
-    .top-bar {
-      height: var(--header-height);
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border-light);
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
+        .search-wrapper button {
+            background: var(--accent);
+            border: none;
+            border-radius: 40px;
+            padding: 8px 18px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+        }
 
-    .page-title h2 {
-      font-size: 1.35rem;
-      font-weight: 600;
-    }
+        .faq-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 28px;
+        }
 
-    .search-area {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
+        .faq-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
 
-    .search-box {
-      background: var(--bg-body);
-      border: 1px solid var(--border-light);
-      border-radius: 40px;
-      padding: 8px 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 260px;
-    }
+        .faq-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            transition: all 0.1s ease;
+        }
 
-    .search-box input {
-      background: transparent;
-      border: none;
-      outline: none;
-      flex: 1;
-      font-size: 0.85rem;
-      color: var(--text-primary);
-    }
+        .faq-question {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 6px 0;
+        }
 
-    .search-box button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
-      color: var(--accent);
-    }
+        .faq-question .q-text {
+            flex: 1;
+            color: var(--text-primary);
+        }
 
-    .btn-icon {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-light);
-      border-radius: 40px;
-      padding: 8px 14px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-primary);
-    }
+        .copy-icon {
+            background: var(--accent-soft);
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--accent);
+            cursor: pointer;
+            transition: 0.1s;
+        }
 
-    .faq-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px 28px;
-    }
+        .copy-icon:hover {
+            background: var(--accent);
+            color: white;
+        }
 
-    .faq-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 900px;
-      margin: 0 auto;
-      width: 100%;
-    }
+        .faq-answer {
+            background: var(--code-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 8px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            border-left: 3px solid var(--accent);
+            display: none;
+        }
 
-    .faq-card {
-      background: var(--bg-card);
-      border-radius: 24px;
-      padding: 20px 24px;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--border-light);
-      transition: 0.1s;
-    }
+        .faq-answer.open {
+            display: block;
+        }
 
-    .faq-question {
-      font-weight: 700;
-      font-size: 1.05rem;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border-radius: 32px;
+            color: var(--text-muted);
+        }
 
-    .faq-badge {
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-size: 0.7rem;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-weight: 500;
-    }
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+        }
 
-    .faq-answer {
-      color: var(--text-secondary);
-      line-height: 1.5;
-      font-size: 0.9rem;
-      margin-top: 8px;
-      white-space: pre-wrap;
-    }
+        @media (max-width: 720px) {
+            .sidebar {
+                width: 260px;
+                position: fixed;
+                z-index: 10;
+                transform: translateX(-100%);
+                transition: transform 0.2s;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .top-bar {
+                padding: 14px 18px;
+            }
+            .faq-container {
+                padding: 18px;
+            }
+            .menu-toggle {
+                display: block;
+                background: var(--bg-surface);
+                border: 1px solid var(--border-light);
+                border-radius: 12px;
+                padding: 8px 12px;
+                cursor: pointer;
+            }
+        }
 
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
-      background: var(--bg-surface);
-      border-radius: 32px;
-    }
+        .menu-toggle {
+            display: none;
+        }
 
-    .reload-manual {
-      margin-left: 8px;
-    }
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
 
-    @media (max-width: 680px) {
-      .sidebar {
-        width: 80px;
-        min-width: 80px;
-      }
-      .sidebar .logo-text, .sidebar .seller-item span:not(.emoji) {
-        display: none;
-      }
-      .seller-item {
-        justify-content: center;
-      }
-      .menu-item span {
-        display: none;
-      }
-      .menu-children {
-        margin-left: 8px;
-      }
-      .top-bar {
-        flex-direction: column;
-        height: auto;
-        padding: 12px;
-      }
-      .search-box {
-        width: 100%;
-      }
-    }
-  </style>
+        ::-webkit-scrollbar-track {
+            background: var(--border-light);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="app">
-  <!-- SIDEBAR (menu & seller) -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="logo-area">
-        <div class="logo-icon">CS</div>
-        <div class="logo-text">HelpDesk</div>
-      </div>
-      <button class="theme-toggle" id="themeToggleBtn" aria-label="Dark/Light mode">
-        🌓 Mode
-      </button>
-    </div>
-    <div class="seller-list" id="sellerList"></div>
-    <div class="menu-tree" id="menuTreeContainer">
-      <div style="padding: 16px; text-align:center; color:var(--text-muted);">Loading menu...</div>
-    </div>
-  </aside>
-
-  <!-- MAIN PANEL -->
-  <main class="main-panel">
-    <div class="top-bar">
-      <div class="page-title">
-        <h2 id="currentMenuTitle">Semua FAQ</h2>
-      </div>
-      <div class="search-area">
-        <div class="search-box">
-          <span>🔍</span>
-          <input type="text" id="searchInput" placeholder="Cari pertanyaan atau jawaban..." autocomplete="off">
-          <button id="searchBtn">Cari</button>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-area">
+                <div class="logo-icon">📘</div>
+                <div class="logo-text">
+                    <h2>SellerHub</h2>
+                    <p>Pusat Bantuan</p>
+                </div>
+            </div>
+            <button class="theme-toggle" id="themeToggleBtn">🌙</button>
         </div>
-        <button class="btn-icon" id="reloadDataBtn" title="Refresh data dari server">
-          🔄 Refresh
+        <div class="seller-list" id="sellerList">
+            <div class="seller-item" data-seller="all">
+                <span class="seller-badge">📌</span>
+                <span>Semua Seller</span>
+            </div>
+        </div>
+        <button class="reload-btn" id="reloadDataBtn">
+            🔄 Muat Ulang Data
         </button>
-      </div>
     </div>
-    <div class="faq-container" id="faqContainer">
-      <div class="faq-grid" id="faqList">
-        <div class="empty-state">✨ Selamat datang! Pilih seller & kategori menu untuk melihat FAQ.</div>
-      </div>
+    <div class="main">
+        <div class="top-bar">
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button class="menu-toggle" id="menuToggleBtn">☰ Menu</button>
+                <div class="page-title">
+                    <h1 id="activeSellerTitle">Semua FAQ</h1>
+                </div>
+            </div>
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="Cari pertanyaan atau jawaban..." autocomplete="off">
+                <button id="searchBtn">Cari</button>
+            </div>
+        </div>
+        <div class="faq-container" id="faqContainer">
+            <div class="empty-state">✨ Memuat data FAQ ...</div>
+        </div>
     </div>
-  </main>
 </div>
+<div id="toastMsg" class="toast-msg">📋 Tersalin!</div>
 
 <script>
-  // ======================== GLOBAL STATE ========================
-  let cachedMenuTree = [];       // raw tree (seller1, seller2 children)
-  let flatMenuItems = [];        // { id, parent_id, nama, sellerRootId }
-  let allFaqData = [];           // semua faq dari seluruh menu
-  let currentSellerId = "1";     // default "1" -> seller 1
-  let currentMenuId = null;      // null = show all FAQ dari seller aktif
-  let isLoading = false;
+    // ======================== KONFIGURASI ========================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKJUJieEWG91Bu_FQsgJxV4FSvUTJCFbbByfuTh0FQk12eRk2WqZH4wLLiqYsXWMPL/exec";
+    
+    // STATE GLOBAL
+    let fullMenuTree = [];       // menu tree id -> nama
+    let allFaqs = [];            // [{id, menu_id, pertanyaan, jawaban}]
+    let currentSellerId = "all"; // 'all' atau id menu seperti '1', '2'
+    let currentSearchTerm = "";
 
-  // DOM elements
-  const sellerListDiv = document.getElementById("sellerList");
-  const menuTreeContainer = document.getElementById("menuTreeContainer");
-  const faqListDiv = document.getElementById("faqList");
-  const currentMenuTitleSpan = document.getElementById("currentMenuTitle");
-  const searchInput = document.getElementById("searchInput");
-  const searchBtn = document.getElementById("searchBtn");
-  const reloadBtn = document.getElementById("reloadDataBtn");
-  const themeToggle = document.getElementById("themeToggleBtn");
+    // DOM elements
+    const sellerListDiv = document.getElementById('sellerList');
+    const faqContainer = document.getElementById('faqContainer');
+    const activeSellerTitle = document.getElementById('activeSellerTitle');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const reloadBtn = document.getElementById('reloadDataBtn');
+    const themeToggle = document.getElementById('themeToggleBtn');
+    const menuToggleBtn = document.getElementById('menuToggleBtn');
+    const sidebarEl = document.getElementById('sidebar');
 
-  // base endpoint (hardcoded from your apps script)
-  const BASE_URL = "https://script.google.com/macros/s/AKfycbwKJUJieEWG91Bu_FQsgJxV4FSvUTJCFbbByfuTh0FQk12eRk2WqZH4wLLiqYsXWMPL/exec";
-
-  // ======================== API HELPER ========================
-  async function fetchAPI(action, params = {}) {
-    const url = new URL(BASE_URL);
-    url.searchParams.append("action", action);
-    for (let [key, val] of Object.entries(params)) {
-      if (val !== undefined && val !== null) url.searchParams.append(key, val);
+    // Helper toast
+    function showToast(msg) {
+        const toast = document.getElementById('toastMsg');
+        toast.textContent = msg || "📋 Tersalin!";
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 1800);
     }
-    try {
-      const response = await fetch(url.toString(), { method: "GET", cache: "no-cache" });
-      const json = await response.json();
-      if (!json.success) throw new Error(json.message || json.error || "Gagal mengambil data");
-      return json.data;
-    } catch (err) {
-      console.error(`API ${action} error:`, err);
-      throw err;
-    }
-  }
 
-  // Fetch semua menu dari backend, lalu bangun tree
-  async function loadMenuTree() {
-    try {
-      const menuData = await fetchAPI("menu");
-      // menuData adalah array of nodes dengan { id, nama, children? } dari getMenuTree()
-      // karena getMenuTree menghasilkan tree utuh berisi seluruh menu termasuk seller root?
-      // Berdasarkan code apps script: getMenuTree() menghasilkan tree dari parent_id "0" (root seller)
-      // sehingga kita dapatkan array dengan dua node utama: Seller 1 (id=1), Seller 2 (id=2) beserta children nya.
-      cachedMenuTree = menuData || [];
-      // flatten semua node untuk memudahkan filter per seller
-      flatMenuItems = [];
-      function flatten(nodes, sellerRootId = null) {
-        for (let node of nodes) {
-          const sellerId = (node.id === "1" || node.id === "2") ? node.id : sellerRootId;
-          flatMenuItems.push({
-            id: node.id,
-            parent_id: null, // not needed but we store seller root reference
-            nama: node.nama,
-            sellerRootId: sellerId || node.id
-          });
-          if (node.children && node.children.length) {
-            flatten(node.children, sellerId || node.id);
-          }
+    // Copy jawaban ke clipboard (semua jawaban dalam card)
+    function copyAnswerToClipboard(answerText, event) {
+        event.stopPropagation();
+        navigator.clipboard.writeText(answerText).then(() => {
+            showToast("✅ Jawaban disalin!");
+        }).catch(() => {
+            showToast("⚠️ Gagal menyalin");
+        });
+    }
+
+    // Render FAQ berdasarkan sellerId dan keyword
+    function renderFaqs() {
+        if (!allFaqs.length && currentSearchTerm === "") {
+            faqContainer.innerHTML = `<div class="empty-state">📭 Belum ada data. Klik "Muat Ulang Data" atau periksa koneksi.</div>`;
+            return;
         }
-      }
-      flatten(cachedMenuTree);
-      renderSellerTabs();   // tampilkan seller 1 & 2
-      renderMenuTree();     // render sesuai seller aktif
-      return cachedMenuTree;
-    } catch (err) {
-      console.error(err);
-      menuTreeContainer.innerHTML = `<div style="padding:16px; color:red;">Gagal muat menu: ${err.message}</div>`;
-      throw err;
+        
+        let filtered = [...allFaqs];
+        // filter berdasarkan menu seller (parent top-level: 1 = Seller 1, 2 = Seller 2)
+        if (currentSellerId !== "all") {
+            filtered = filtered.filter(faq => String(faq.menu_id) === String(currentSellerId));
+        }
+        // filter keyword
+        if (currentSearchTerm.trim() !== "") {
+            const term = currentSearchTerm.trim().toLowerCase();
+            filtered = filtered.filter(faq => 
+                faq.pertanyaan.toLowerCase().includes(term) || 
+                faq.jawaban.toLowerCase().includes(term)
+            );
+        }
+        
+        if (filtered.length === 0) {
+            faqContainer.innerHTML = `<div class="empty-state">🔍 Tidak ada FAQ yang cocok.</div>`;
+            return;
+        }
+        
+        // mapping untuk mendapatkan nama seller / menu konteks (opsional)
+        const menuMap = new Map();
+        fullMenuTree.forEach(item => { menuMap.set(String(item.id), item.nama); });
+        
+        let html = `<div class="faq-grid">`;
+        filtered.forEach(faq => {
+            const menuParentName = menuMap.get(String(faq.menu_id)) || `Menu ${faq.menu_id}`;
+            html += `
+                <div class="faq-card" data-id="${faq.id}">
+                    <div class="faq-question" data-id="${faq.id}">
+                        <span class="q-text">📌 ${escapeHtml(faq.pertanyaan)} <span style="font-size:0.7rem; background:var(--border-light); padding:2px 8px; border-radius:40px; margin-left:10px;">${escapeHtml(menuParentName)}</span></span>
+                        <span class="copy-icon" data-copy="${faq.id}">📋 Salin</span>
+                    </div>
+                    <div class="faq-answer" id="answer-${faq.id}">
+                        ${formatJawaban(escapeHtml(faq.jawaban))}
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        faqContainer.innerHTML = html;
+        
+        // Pasang event buka/tutup + salin (delegation)
+        document.querySelectorAll('.faq-question').forEach(q => {
+            q.addEventListener('click', (e) => {
+                if(e.target.classList.contains('copy-icon')) return;
+                const card = q.closest('.faq-card');
+                const answerDiv = card.querySelector('.faq-answer');
+                if(answerDiv) answerDiv.classList.toggle('open');
+            });
+        });
+        document.querySelectorAll('.copy-icon').forEach(icon => {
+            icon.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const faqId = icon.getAttribute('data-copy');
+                const faqItem = filtered.find(f => String(f.id) === faqId);
+                if(faqItem) {
+                    const fullAnswer = faqItem.jawaban;
+                    await navigator.clipboard.writeText(fullAnswer);
+                    showToast("📋 Jawaban tersalin ke clipboard");
+                } else {
+                    showToast("Gagal menemukan jawaban");
+                }
+            });
+        });
     }
-  }
-
-  // ambil semua FAQ (load sekali) - pakai action=faq tanpa menuId = ambil semua? Namun API membutuhkan menuId
-  // Karena hanya getFaqByMenu(menuId), maka kita perlu fetch per menu? agak berat. Tapi lebih baik ambil semua FAQ dengan cara aggregat.
-  // Alternatif: panggil getFaqByMenu untuk tiap menu? tidak optimal. Karena API tidak menyediakan getAllFaq, kita bisa panggil per menu ID unik? 
-  // TAPI agar efisien saat load pertama: kita kumpulkan semua menu id (unique) lalu fetch FAQ tiap menu, atau modifikasi apps script? Tidak bisa modifikasi.
-  // Solusi: kita fetch FAQ per menu ID yang ada di flatMenuItems, merge semua, lalu cache. Namun bisa banyak request.
-  // Lebih baik tambahkan endpoint dummy? tapi hanya tersedia action=faq butuh menuId. Kita gunakan metode parallel fetch namun hati-hati.
-  // Karena data demo tidak terlalu besar, lakukan load semua FAQ dengan memanggil tiap menu id unik (termasuk sub menu) saat inisialisasi.
-  async function loadAllFaqsFromAllMenus() {
-    // ambil semua menu id unik dari flatMenuItems (semua menu termasuk seller sendiri? seller (id=1,2) mungkin tidak punya FAQ, tapi aman)
-    const uniqueMenuIds = [...new Set(flatMenuItems.map(item => item.id))];
-    const faqPromises = uniqueMenuIds.map(menuId => 
-      fetchAPI("faq", { menuId: menuId }).catch(err => {
-        console.warn(`Gagal ambil FAQ menu ${menuId}`, err);
+    
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+    
+    function formatJawaban(text) {
+        if(!text) return '<em>Tidak ada jawaban</em>';
+        let formatted = text.replace(/\n/g, '<br>');
+        return `<div style="line-height:1.55;">${formatted}</div>`;
+    }
+    
+    // Ambil data dari Apps Script: menu & faq secara paralel
+    async function fetchMenu() {
+        const url = `${SCRIPT_URL}?action=menu`;
+        const resp = await fetch(url);
+        const json = await resp.json();
+        if(json.success && json.data) {
+            return json.data; // tree array [{id, nama, children}]
+        } else {
+            throw new Error("Gagal ambil menu");
+        }
+    }
+    
+    // flatten tree to list with parent mapping (butuh flat untuk mapping)
+    function flattenMenuTree(tree, parentMap = new Map()) {
+        let flat = [];
+        function traverse(nodes, parentId = "0") {
+            for(let node of nodes) {
+                flat.push({ id: String(node.id), nama: node.nama, parent_id: parentId });
+                if(node.children && node.children.length) {
+                    traverse(node.children, String(node.id));
+                }
+            }
+        }
+        traverse(tree);
+        return flat;
+    }
+    
+    async function fetchFaqByMenuId(menuId = null) {
+        let url = `${SCRIPT_URL}?action=faq`;
+        if(menuId) url += `&menuId=${menuId}`;
+        const resp = await fetch(url);
+        const json = await resp.json();
+        if(json.success && json.data) return json.data;
         return [];
-      })
-    );
-    const results = await Promise.all(faqPromises);
-    // gabung semua FAQ
-    let combined = [];
-    for (let res of results) {
-      if (Array.isArray(res)) combined.push(...res);
     }
-    // hilangkan duplikat berdasarkan id (jika ada)
-    const uniqueMap = new Map();
-    combined.forEach(faq => { if (faq.id && !uniqueMap.has(faq.id)) uniqueMap.set(faq.id, faq); });
-    allFaqData = Array.from(uniqueMap.values());
-    // setelah semua FAQ tersedia, render ulang konten
-    renderFAQByCurrentState();
-  }
-
-  // Render daftar seller (seller 1, seller 2)
-  function renderSellerTabs() {
-    const sellers = cachedMenuTree.filter(node => node.id === "1" || node.id === "2");
-    if (!sellers.length) {
-      sellerListDiv.innerHTML = '<div class="seller-item">Tidak ada seller</div>';
-      return;
+    
+    async function fetchAllFaqs() {
+        // ambil semua FAQ dari sheet 'faq' tanpa filter menu, gunakan action=faq (tanpa menuId)
+        const url = `${SCRIPT_URL}?action=faq`;
+        const resp = await fetch(url);
+        const json = await resp.json();
+        if(json.success && Array.isArray(json.data)) return json.data;
+        return [];
     }
-    sellerListDiv.innerHTML = sellers.map(seller => `
-      <div class="seller-item ${currentSellerId === seller.id ? 'active' : ''}" data-seller-id="${seller.id}">
-        <span>🏪</span> <span>${escapeHtml(seller.nama)}</span>
-      </div>
-    `).join('');
-    // attach event
-    document.querySelectorAll('.seller-item[data-seller-id]').forEach(el => {
-      el.addEventListener('click', (e) => {
-        const sellerId = el.dataset.sellerId;
-        if (sellerId === currentSellerId) return;
-        currentSellerId = sellerId;
-        currentMenuId = null;   // reset menu pilihan
-        renderSellerTabs();
-        renderMenuTree();
-        renderFAQByCurrentState();
-      });
-    });
-  }
-
-  // render menu tree berdasarkan seller aktif
-  function renderMenuTree() {
-    if (!cachedMenuTree.length) {
-      menuTreeContainer.innerHTML = `<div style="padding:16px;">Tidak ada menu</div>`;
-      return;
-    }
-    const sellerNode = cachedMenuTree.find(node => node.id === currentSellerId);
-    if (!sellerNode) {
-      menuTreeContainer.innerHTML = `<div style="padding:16px;">Menu tidak ditemukan</div>`;
-      return;
-    }
-    // build recursive HTML
-    function buildTreeHTML(node, level = 0) {
-      const isActive = (currentMenuId === node.id);
-      const hasChildren = node.children && node.children.length > 0;
-      let html = `<li>
-        <div class="menu-item ${isActive ? 'active' : ''}" data-menu-id="${node.id}">
-          <span>📁</span> <span>${escapeHtml(node.nama)}</span>
-        </div>`;
-      if (hasChildren) {
-        html += `<ul class="menu-children">`;
-        for (let child of node.children) {
-          html += buildTreeHTML(child, level + 1);
+    
+    async function loadAllData() {
+        try {
+            faqContainer.innerHTML = `<div class="empty-state">⏳ Mengambil data dari server...</div>`;
+            // Ambil menu (struktur)
+            const menuTree = await fetchMenu();
+            fullMenuTree = flattenMenuTree(menuTree);
+            // ambil semua faq
+            allFaqs = await fetchAllFaqs();
+            // bangun seller top level (id 1 & 2) dari fullMenuTree
+            const topSellers = fullMenuTree.filter(item => item.parent_id === "0" && (item.id === "1" || item.id === "2"));
+            // Update sidebar dengan seller
+            let sellerHtml = `<div class="seller-item" data-seller="all">
+                <span class="seller-badge">📌</span>
+                <span>Semua Seller</span>
+            </div>`;
+            for(let seller of topSellers) {
+                sellerHtml += `<div class="seller-item" data-seller="${seller.id}">
+                    <span class="seller-badge">🏢</span>
+                    <span>${escapeHtml(seller.nama)}</span>
+                </div>`;
+            }
+            sellerListDiv.innerHTML = sellerHtml;
+            // attach event ke setiap seller-item
+            document.querySelectorAll('.seller-item').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    const sellerVal = el.getAttribute('data-seller');
+                    if(sellerVal) {
+                        currentSellerId = sellerVal;
+                        updateActiveSellerUI();
+                        renderFaqs();
+                        // di mobile tutup sidebar
+                        if(window.innerWidth <= 720) {
+                            sidebarEl.classList.remove('mobile-open');
+                        }
+                    }
+                });
+            });
+            updateActiveSellerUI();
+            renderFaqs();
+        } catch(err) {
+            console.error(err);
+            faqContainer.innerHTML = `<div class="empty-state">⚠️ Gagal memuat data. Periksa koneksi atau CORS.<br>${err.toString()}</div>`;
         }
-        html += `</ul>`;
-      }
-      html += `</li>`;
-      return html;
     }
-    let menuHtml = `<ul class="menu-node" style="list-style:none;">${buildTreeHTML(sellerNode)}</ul>`;
-    menuTreeContainer.innerHTML = menuHtml;
-    // tambahkan event listener ke semua menu-item
-    document.querySelectorAll('.menu-item[data-menu-id]').forEach(el => {
-      el.addEventListener('click', (e) => {
-        const menuId = el.dataset.menuId;
-        if (currentMenuId === menuId) return;
-        currentMenuId = menuId;
-        // update active style
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        el.classList.add('active');
-        renderFAQByCurrentState();
-      });
-    });
-  }
-
-  // render FAQ berdasarkan seller aktif & menu yang dipilih (atau all menu dari seller tsb)
-  function renderFAQByCurrentState() {
-    if (!allFaqData.length) {
-      faqListDiv.innerHTML = `<div class="empty-state">📘 Belum ada data FAQ. Silakan refresh atau coba lagi.</div>`;
-      updateTitle();
-      return;
+    
+    function updateActiveSellerUI() {
+        let displayName = "Semua Seller";
+        if(currentSellerId !== "all") {
+            const sellerItem = fullMenuTree.find(m => String(m.id) === String(currentSellerId));
+            if(sellerItem) displayName = sellerItem.nama;
+            else displayName = `Seller ${currentSellerId}`;
+        }
+        activeSellerTitle.innerText = displayName;
+        // highlight sidebar
+        document.querySelectorAll('.seller-item').forEach(el => {
+            const val = el.getAttribute('data-seller');
+            if(val === currentSellerId) el.classList.add('active');
+            else el.classList.remove('active');
+        });
     }
-    // filter FAQ berdasarkan menu_id yang dimiliki oleh seller aktif
-    // Step 1: kumpulkan semua menu id yang termasuk dalam seller ini (dari flatMenuItems)
-    const sellerMenuIds = flatMenuItems.filter(item => item.sellerRootId === currentSellerId).map(item => item.id);
-    let filteredFaq = allFaqData.filter(faq => sellerMenuIds.includes(String(faq.menu_id)));
-    // Jika ada menu tertentu dipilih
-    if (currentMenuId) {
-      filteredFaq = filteredFaq.filter(faq => String(faq.menu_id) === String(currentMenuId));
+    
+    async function reloadDataManually() {
+        await loadAllData();
+        showToast("🔄 Data berhasil dimuat ulang");
+        currentSearchTerm = "";
+        searchInput.value = "";
+        renderFaqs();
     }
-    if (filteredFaq.length === 0) {
-      faqListDiv.innerHTML = `<div class="empty-state">❓ Tidak ada FAQ untuk menu ini. Silakan pilih menu lain.</div>`;
-      updateTitle();
-      return;
+    
+    function handleSearch() {
+        currentSearchTerm = searchInput.value;
+        renderFaqs();
     }
-    // tampilkan kartu FAQ
-    const faqHtml = filteredFaq.map(faq => `
-      <div class="faq-card">
-        <div class="faq-question">
-          <span class="faq-badge">💬 Tanya</span>
-          <strong>${escapeHtml(faq.pertanyaan)}</strong>
-        </div>
-        <div class="faq-answer">
-          ${escapeHtml(faq.jawaban).replace(/\n/g, '<br>')}
-        </div>
-      </div>
-    `).join('');
-    faqListDiv.innerHTML = `<div class="faq-grid">${faqHtml}</div>`;
-    updateTitle();
-  }
-
-  function updateTitle() {
-    let sellerName = cachedMenuTree.find(s => s.id === currentSellerId)?.nama || `Seller ${currentSellerId}`;
-    let menuName = "";
-    if (currentMenuId) {
-      const foundMenu = flatMenuItems.find(m => m.id === currentMenuId);
-      menuName = foundMenu ? ` / ${foundMenu.nama}` : "";
-    } else {
-      menuName = " / Semua menu";
+    
+    // tema gelap terang
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if(savedTheme === 'dark') {
+            document.body.classList.add('dark');
+            themeToggle.innerHTML = '☀️';
+        } else {
+            document.body.classList.remove('dark');
+            themeToggle.innerHTML = '🌙';
+        }
     }
-    currentMenuTitleSpan.innerText = `${sellerName}${menuName}`;
-  }
-
-  // Fungsi search (dari semua FAQ yang sudah di-cache, tapi filter berdasarkan seller juga)
-  async function performSearch() {
-    const keyword = searchInput.value.trim();
-    if (keyword === "") {
-      renderFAQByCurrentState();
-      return;
+    function toggleTheme() {
+        if(document.body.classList.contains('dark')) {
+            document.body.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+            themeToggle.innerHTML = '🌙';
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = '☀️';
+        }
     }
-    // filter dari allFaqData namun terbatas seller aktif
-    const sellerMenuIds = flatMenuItems.filter(item => item.sellerRootId === currentSellerId).map(item => item.id);
-    let localResults = allFaqData.filter(faq => sellerMenuIds.includes(String(faq.menu_id)));
-    const lowerKeyword = keyword.toLowerCase();
-    localResults = localResults.filter(faq => 
-      faq.pertanyaan.toLowerCase().includes(lowerKeyword) || 
-      faq.jawaban.toLowerCase().includes(lowerKeyword)
-    );
-    if (localResults.length === 0) {
-      faqListDiv.innerHTML = `<div class="empty-state">🔎 Tidak ada hasil pencarian untuk "${escapeHtml(keyword)}"</div>`;
-      currentMenuTitleSpan.innerText = `Hasil pencarian: ${escapeHtml(keyword)}`;
-      return;
+    
+    // Mobile sidebar
+    function setupMobile() {
+        if(menuToggleBtn) {
+            menuToggleBtn.addEventListener('click', () => {
+                sidebarEl.classList.toggle('mobile-open');
+            });
+        }
+        window.addEventListener('click', (e) => {
+            if(window.innerWidth <= 720 && sidebarEl.classList.contains('mobile-open')) {
+                if(!sidebarEl.contains(e.target) && !menuToggleBtn.contains(e.target)) {
+                    sidebarEl.classList.remove('mobile-open');
+                }
+            }
+        });
     }
-    const searchHtml = localResults.map(faq => `
-      <div class="faq-card">
-        <div class="faq-question">
-          <span class="faq-badge">🔍</span>
-          <strong>${escapeHtml(faq.pertanyaan)}</strong>
-        </div>
-        <div class="faq-answer">${escapeHtml(faq.jawaban).replace(/\n/g, '<br>')}</div>
-      </div>
-    `).join('');
-    faqListDiv.innerHTML = `<div class="faq-grid">${searchHtml}</div>`;
-    currentMenuTitleSpan.innerText = `🔎 Pencarian: "${escapeHtml(keyword)}"`;
-  }
-
-  // reload manual: ambil ulang semua menu dan FAQ (fresh)
-  async function fullReload() {
-    if (isLoading) return;
-    isLoading = true;
-    reloadBtn.innerText = "🔄 Memuat...";
-    try {
-      await loadMenuTree();
-      await loadAllFaqsFromAllMenus();
-      renderFAQByCurrentState();
-    } catch (err) {
-      faqListDiv.innerHTML = `<div class="empty-state">⚠️ Gagal reload data: ${err.message}</div>`;
-    } finally {
-      isLoading = false;
-      reloadBtn.innerText = "🔄 Refresh";
+    
+    // Inisialisasi
+    async function init() {
+        initTheme();
+        setupMobile();
+        await loadAllData();
+        // event listeners
+        searchBtn.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSearch(); });
+        reloadBtn.addEventListener('click', () => reloadDataManually());
+        themeToggle.addEventListener('click', toggleTheme);
+        // click any copy on dynamic will be handled by delegation, tapi setelah render kita pastikan
     }
-  }
-
-  // Theme toggle (dark/light)
-  function initTheme() {
-    const isDark = localStorage.getItem("theme") === "dark";
-    if (isDark) document.body.classList.add("dark");
-    else document.body.classList.remove("dark");
-    themeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      const nowDark = document.body.classList.contains("dark");
-      localStorage.setItem("theme", nowDark ? "dark" : "light");
-    });
-  }
-
-  // helper
-  function escapeHtml(str) {
-    if (!str) return "";
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-      return c;
-    });
-  }
-
-  // INITIAL LOAD
-  (async function bootstrap() {
-    initTheme();
-    try {
-      await loadMenuTree();         // ambil tree menu & build seller
-      await loadAllFaqsFromAllMenus(); // ambil semua FAQ via multi request menu
-      renderFAQByCurrentState();
-    } catch (err) {
-      console.error(err);
-      faqListDiv.innerHTML = `<div class="empty-state">Koneksi gagal atau error API. Cek kembali CORS / Apps Script publik.<br>${err.message}</div>`;
-    }
-    // Event search
-    searchBtn.addEventListener("click", performSearch);
-    searchInput.addEventListener("keypress", (e) => { if (e.key === "Enter") performSearch(); });
-    reloadBtn.addEventListener("click", fullReload);
-  })();
+    
+    init();
 </script>
 </body>
 </html>
