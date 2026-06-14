@@ -90,6 +90,11 @@
             50% { box-shadow: 0 0 20px rgba(67, 97, 238, 0.6); }
         }
         
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
         .app { display: flex; height: 100vh; width: 100%; position: relative; }
         
         /* Sidebar Styles */
@@ -161,6 +166,15 @@
             font-size: 0.95rem;
             position: relative;
             overflow: hidden;
+        }
+        
+        .reload-btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .reload-btn.loading .reload-icon {
+            animation: rotate 1s linear infinite;
         }
         
         .reload-btn::before {
@@ -732,6 +746,15 @@
             padding: 2px 6px;
             border-radius: 4px;
         }
+        
+        /* Expand indicator animation */
+        .expand-indicator {
+            transition: transform 0.3s ease;
+        }
+        
+        .tree-node.active .expand-indicator {
+            transform: rotate(90deg);
+        }
     </style>
 </head>
 <body>
@@ -743,7 +766,8 @@
                 <div class="logo-text">Minipack</div>
             </div>
             <button class="reload-btn" id="reloadBtn">
-                <span>🔄</span> Load Manual
+                <span class="reload-icon">🔄</span>
+                <span>Load Manual</span>
             </button>
         </div>
         <div class="nav-tree" id="menuTree"></div>
@@ -787,6 +811,7 @@
     let currentMenuName = "";
     let currentBreadcrumb = [];
     let isLoading = false;
+    let expandedMenus = new Set(); // Track expanded menus
     
     // Toast Notification
     function showToast(message, type = 'success') {
@@ -807,18 +832,25 @@
     function showLoading(show) {
         isLoading = show;
         const container = document.getElementById("faqContainer");
-        if (show && !container.querySelector('.dashboard-container')) {
-            container.innerHTML = `
-                <div class="skeleton-card">
-                    <div class="skeleton" style="height: 100px;"></div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton" style="height: 100px;"></div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton" style="height: 100px;"></div>
-                </div>
-            `;
+        const reloadBtn = document.getElementById("reloadBtn");
+        
+        if (show) {
+            if (reloadBtn) reloadBtn.classList.add('loading');
+            if (container && !container.querySelector('.dashboard-container')) {
+                container.innerHTML = `
+                    <div class="skeleton-card">
+                        <div class="skeleton" style="height: 100px;"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton" style="height: 100px;"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton" style="height: 100px;"></div>
+                    </div>
+                `;
+            }
+        } else {
+            if (reloadBtn) reloadBtn.classList.remove('loading');
         }
     }
     
@@ -850,6 +882,7 @@
             
             menuTree = menuData;
             allFaqs = faqData;
+            expandedMenus.clear(); // Reset expanded menus
             
             renderMenuTree(menuTree);
             showDashboard();
@@ -971,11 +1004,25 @@
         return null;
     }
     
+    function getMenuPath(nodes, id, path = []) {
+        for (const node of nodes) {
+            if (String(node.id) === String(id)) {
+                return [...path, node];
+            }
+            if (node.children) {
+                const found = getMenuPath(node.children, id, [...path, node]);
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+    
     // Global Functions for Dashboard
     window.showAllCategories = function() {
         if (menuTree.length > 0) {
             const firstMenu = menuTree[0];
-            setActiveMenu(firstMenu.id, firstMenu.nama, [firstMenu]);
+            const menuPath = getMenuPath(menuTree, firstMenu.id);
+            setActiveMenu(firstMenu.id, firstMenu.nama, menuPath || [firstMenu]);
         }
     };
     
@@ -986,32 +1033,34 @@
     
     window.selectCategory = function(id, name) {
         const menu = findMenuById(menuTree, id);
-        setActiveMenu(id, name, menu ? [menu] : []);
+        const menuPath = getMenuPath(menuTree, id);
+        setActiveMenu(id, name, menuPath || [menu]);
     };
     
     // Render Menu Tree
     function renderMenuTree(tree) {
         const container = document.getElementById("menuTree");
         
-        const buildTreeHTML = (nodes, level = 0) => {
+        const buildTreeHTML = (nodes, level = 0, parentId = null) => {
             let html = '<ul style="list-style:none; padding-left: 0;">';
             for (const node of nodes) {
                 const hasChildren = node.children && node.children.length > 0;
                 const isActive = currentMenuId === node.id;
                 const nodeName = node.nama || '(tanpa nama)';
+                const isExpanded = expandedMenus.has(node.id);
                 
                 html += `<li class="tree-item">
-                    <div class="tree-node ${isActive ? 'active' : ''}" data-id="${node.id}" data-name="${escapeHtml(nodeName)}">
+                    <div class="tree-node ${isActive ? 'active' : ''}" data-id="${node.id}" data-name="${escapeHtml(nodeName)}" data-parent="${parentId || ''}">
                         <div class="tree-node-content">
                             <span>${level === 0 ? '📁' : '📄'}</span>
                             <span>${escapeHtml(nodeName)}</span>
-                            ${hasChildren ? `<span style="margin-left: auto; font-size: 11px;">▼</span>` : ''}
+                            ${hasChildren ? `<span class="expand-indicator" style="margin-left: auto; font-size: 11px;">${isExpanded ? '▼' : '▶'}</span>` : ''}
                         </div>
                     </div>`;
                 
                 if (hasChildren) {
-                    html += `<div class="children-list" id="children-${node.id}">
-                        ${buildTreeHTML(node.children, level + 1)}
+                    html += `<div class="children-list ${isExpanded ? 'expanded' : ''}" id="children-${node.id}">
+                        ${buildTreeHTML(node.children, level + 1, node.id)}
                     </div>`;
                 }
                 
@@ -1023,7 +1072,7 @@
         
         container.innerHTML = buildTreeHTML(tree);
         
-        // Event klik menu - auto minimize other menus
+        // Event klik menu - auto minimize other menus (keep active menu expanded)
         document.querySelectorAll('.tree-node').forEach(el => {
             const id = el.getAttribute('data-id');
             const name = el.getAttribute('data-name');
@@ -1031,25 +1080,57 @@
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
-                // Auto minimize other open menus
-                document.querySelectorAll('.children-list.expanded').forEach(child => {
-                    if (child.id !== `children-${id}`) {
-                        child.classList.remove('expanded');
-                    }
-                });
-                
-                // Toggle current menu's children
                 const childrenDiv = document.getElementById(`children-${id}`);
-                if (childrenDiv) {
-                    childrenDiv.classList.toggle('expanded');
+                const hasChildren = childrenDiv !== null;
+                
+                if (hasChildren) {
+                    // Toggle current menu's children
+                    if (childrenDiv.classList.contains('expanded')) {
+                        childrenDiv.classList.remove('expanded');
+                        expandedMenus.delete(id);
+                        const indicator = el.querySelector('.expand-indicator');
+                        if (indicator) indicator.textContent = '▶';
+                    } else {
+                        // Auto minimize other menus (except the active one's parents)
+                        document.querySelectorAll('.children-list.expanded').forEach(child => {
+                            const childId = child.id.replace('children-', '');
+                            // Don't close if it's an ancestor of current menu
+                            const isAncestor = isAncestorOf(childId, id);
+                            if (!isAncestor && childId !== id) {
+                                child.classList.remove('expanded');
+                                expandedMenus.delete(childId);
+                                const otherNode = document.querySelector(`.tree-node[data-id="${childId}"]`);
+                                const otherIndicator = otherNode?.querySelector('.expand-indicator');
+                                if (otherIndicator) otherIndicator.textContent = '▶';
+                            }
+                        });
+                        
+                        childrenDiv.classList.add('expanded');
+                        expandedMenus.add(id);
+                        const indicator = el.querySelector('.expand-indicator');
+                        if (indicator) indicator.textContent = '▼';
+                    }
                 }
                 
-                const menu = findMenuById(menuTree, id);
-                setActiveMenu(id, name, menu ? [menu] : []);
+                // Get full menu path for breadcrumb
+                const menuPath = getMenuPath(menuTree, id);
+                setActiveMenu(id, name, menuPath || []);
                 
                 if (window.innerWidth <= 680) closeSidebar();
             });
         });
+    }
+    
+    function isAncestorOf(ancestorId, descendantId) {
+        const descendant = findMenuById(menuTree, descendantId);
+        if (!descendant) return false;
+        
+        function checkParent(node, targetId) {
+            if (!node) return false;
+            if (String(node.id) === String(targetId)) return true;
+            return false;
+        }
+        return false;
     }
     
     // Set Active Menu
@@ -1066,21 +1147,46 @@
         
         document.getElementById("searchInput").value = "";
         
+        // Update active state
         document.querySelectorAll('.tree-node').forEach(n => n.classList.remove('active'));
         const activeNode = document.querySelector(`.tree-node[data-id="${id}"]`);
         if (activeNode) activeNode.classList.add('active');
         
+        // Expand all parent menus to show current menu
+        expandParentMenus(id);
+        
         renderFaqsByMenu();
+    }
+    
+    function expandParentMenus(menuId) {
+        const menuPath = getMenuPath(menuTree, menuId);
+        if (menuPath && menuPath.length > 0) {
+            // Expand all parent menus (excluding the menu itself)
+            for (let i = 0; i < menuPath.length - 1; i++) {
+                const parentMenu = menuPath[i];
+                const parentDiv = document.getElementById(`children-${parentMenu.id}`);
+                if (parentDiv && !parentDiv.classList.contains('expanded')) {
+                    parentDiv.classList.add('expanded');
+                    expandedMenus.add(parentMenu.id);
+                    const parentNode = document.querySelector(`.tree-node[data-id="${parentMenu.id}"]`);
+                    const indicator = parentNode?.querySelector('.expand-indicator');
+                    if (indicator) indicator.textContent = '▼';
+                }
+            }
+        }
     }
     
     function updateBreadcrumb() {
         const breadcrumbDiv = document.getElementById("breadcrumb");
         if (currentBreadcrumb.length === 0) {
-            breadcrumbDiv.innerHTML = '<span>🏠 Dashboard</span>';
+            breadcrumbDiv.innerHTML = '<div class="breadcrumb-item"><span onclick="showDashboard()">🏠 Beranda</span></div>';
         } else {
             let html = '<div class="breadcrumb-item"><span onclick="showDashboard()">🏠 Beranda</span></div>';
             currentBreadcrumb.forEach((item, index) => {
-                html += `<div class="breadcrumb-item">→ <span onclick="selectCategory('${item.id}', '${escapeHtml(item.nama)}')">${escapeHtml(item.nama)}</span></div>`;
+                html += `<div class="breadcrumb-item">
+                    <span>→</span>
+                    <span onclick="selectCategory('${item.id}', '${escapeHtml(item.nama)}')">${escapeHtml(item.nama)}</span>
+                </div>`;
             });
             breadcrumbDiv.innerHTML = html;
         }
@@ -1166,7 +1272,7 @@
             
             document.getElementById("pageTitle").innerText = `Hasil Pencarian`;
             document.getElementById("pageSub").innerText = `"${keyword}" - ${filtered.length} FAQ ditemukan`;
-            document.getElementById("breadcrumb").innerHTML = `<span>🔍 Pencarian: ${escapeHtml(keyword)}</span>`;
+            document.getElementById("breadcrumb").innerHTML = `<div class="breadcrumb-item"><span onclick="showDashboard()">🏠 Beranda</span><span>→</span><span>🔍 Pencarian: ${escapeHtml(keyword)}</span></div>`;
             
             const container = document.getElementById("faqContainer");
             
@@ -1228,6 +1334,7 @@
             q.addEventListener('click', (e) => {
                 if (e.target.classList.contains('copy-all-btn') || e.target.classList.contains('copy-single-btn')) return;
                 
+                // Close other open answers
                 document.querySelectorAll('.faq-answer.open').forEach(openAns => {
                     if (openAns.id !== targetId) openAns.classList.remove('open');
                 });
@@ -1279,7 +1386,8 @@
         document.getElementById("searchInput").value = "";
         if (currentMenuId) {
             const menu = findMenuById(menuTree, currentMenuId);
-            setActiveMenu(currentMenuId, currentMenuName, menu ? [menu] : []);
+            const menuPath = getMenuPath(menuTree, currentMenuId);
+            setActiveMenu(currentMenuId, currentMenuName, menuPath || [menu]);
         } else {
             showDashboard();
         }
